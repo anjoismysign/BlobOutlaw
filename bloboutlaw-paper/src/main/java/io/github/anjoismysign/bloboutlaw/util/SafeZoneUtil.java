@@ -4,7 +4,7 @@ import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.entities.positionable.Positionable;
 import io.github.anjoismysign.bloblib.entities.positionable.PositionableType;
 import io.github.anjoismysign.bloblib.entities.translatable.TranslatablePositionable;
-import io.github.anjoismysign.bloboutlaw.director.manager.OutlawConfigManager;
+import io.github.anjoismysign.bloboutlaw.director.manager.ConfigurationManager;
 import io.github.anjoismysign.holoworld.asset.DataAsset;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public record SafeZoneUtil(@NotNull OutlawConfigManager configManager) {
+public record SafeZoneUtil(@NotNull ConfigurationManager configManager) {
 
     @Nullable
     public Location getNearest(@NotNull Location location) {

@@ -3,7 +3,7 @@ package io.github.anjoismysign.bloboutlaw.director;
 import io.github.anjoismysign.bloblib.entities.GenericManagerDirector;
 import io.github.anjoismysign.bloboutlaw.BlobOutlaw;
 import io.github.anjoismysign.bloboutlaw.director.manager.HookManager;
-import io.github.anjoismysign.bloboutlaw.director.manager.OutlawConfigManager;
+import io.github.anjoismysign.bloboutlaw.director.manager.ConfigurationManager;
 import io.github.anjoismysign.bloboutlaw.director.manager.OutlawListenerManager;
 import io.github.anjoismysign.bloboutlaw.director.manager.SafeZoneManager;
 import io.github.anjoismysign.bloboutlaw.law.Law;
@@ -15,7 +15,7 @@ public class OutlawManagerDirector extends GenericManagerDirector<BlobOutlaw> {
     public OutlawManagerDirector(BlobOutlaw plugin) {
         super(plugin);
         addManager("ConfigManager",
-                new OutlawConfigManager(this));
+                new ConfigurationManager(this));
         addManager("ListenerManager",
                 new OutlawListenerManager(this));
         addManager("SafeZoneManager",
@@ -43,8 +43,8 @@ public class OutlawManagerDirector extends GenericManagerDirector<BlobOutlaw> {
     }
 
     @NotNull
-    public final OutlawConfigManager getConfigManager() {
-        return getManager("ConfigManager", OutlawConfigManager.class);
+    public final ConfigurationManager getConfigManager() {
+        return getManager("ConfigManager", ConfigurationManager.class);
     }
 
     @NotNull
