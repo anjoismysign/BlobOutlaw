@@ -1,0 +1,7 @@
+tinyDebug: false
+# in ticks
+inhibitTimeOut: 200
+# how much bounty is needed to be granted the menace title?
+bountyGrantsMenace: 150.0
+# the safe zones by their identifier
+safeZones: []
