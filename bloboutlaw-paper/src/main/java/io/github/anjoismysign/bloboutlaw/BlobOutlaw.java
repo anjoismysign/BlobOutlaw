@@ -37,7 +37,6 @@ public final class BlobOutlaw extends BlobPlugin {
         BlobScheduler scheduler = getScheduler();
         scheduler.sync(() -> {
             outlawCruder = new BukkitCruderBuilder<BukkitOutlaw>().plugin(this).crudableClass(BukkitOutlaw.class).build();
-            outlawCruder.loadAll();
         });
 
         PluginManager pluginManager = PluginManager.getInstance();
@@ -45,6 +44,12 @@ public final class BlobOutlaw extends BlobPlugin {
         bukkitPrisonManager = pluginManager.addIdentityManager(BukkitPrison.Info.class, this, "prison", true);
         legendaryAnimalManager = pluginManager.addIdentityManager(LegendaryAnimal.Info.class, this, "legendary animal", true);
         legendaryAnimalSpawnerManager = pluginManager.addIdentityManager(LegendaryAnimalSpawner.Info.class, this, "legendary animal spawner", true);
+    }
+
+    @Override
+    public void onDisable(){
+        super.onDisable();
+        outlawCruder.shutdown();
     }
 
     @NotNull
