@@ -11,12 +11,12 @@ public class BehaviourFlagEvent extends OutlawEvent {
 
     private static final HandlerList HANDLERS_LIST = new HandlerList();
     private final @Nullable Entity victim;
-    private final @Nullable Law.Crimes facingCharge;
+    private final @Nullable Law.Crime facingCharge;
     private double transactionAmount;
     private boolean isCriminal;
 
     public BehaviourFlagEvent(@NotNull BukkitOutlawProfile serializable,
-                              @Nullable Law.Crimes facingCharge,
+                              @Nullable Law.Crime facingCharge,
                               double transactionAmount,
                               boolean isCriminal,
                               @Nullable Entity victim) {
@@ -56,7 +56,7 @@ public class BehaviourFlagEvent extends OutlawEvent {
         isCriminal = criminal;
     }
 
-    public @Nullable Law.Crimes getFacingCharge() {
+    public @Nullable Law.Crime getFacingCharge() {
         return facingCharge;
     }
 }

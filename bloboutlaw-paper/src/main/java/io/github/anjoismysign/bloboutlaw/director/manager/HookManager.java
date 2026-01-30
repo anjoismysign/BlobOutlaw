@@ -1,5 +1,6 @@
 package io.github.anjoismysign.bloboutlaw.director.manager;
 
+import io.github.anjoismysign.bloblib.api.BlobLibEconomyAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
 import io.github.anjoismysign.bloblib.entities.BlobPHExpansion;
 import io.github.anjoismysign.bloblib.entities.GenericManager;
@@ -12,9 +13,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.text.NumberFormat;
-import java.util.Locale;
 
 public class HookManager extends GenericManager<BlobOutlaw, OutlawManagerDirector> {
 
@@ -45,7 +43,8 @@ public class HookManager extends GenericManager<BlobOutlaw, OutlawManagerDirecto
                 if (!outlaw.isWanted())
                     return "";
                 double bounty = outlaw.getBounty();
-                String formatted = NumberFormat.getInstance(Locale.US).format(bounty);
+                var elasticEconomy = BlobLibEconomyAPI.getInstance().getElasticEconomy();
+                String formatted = elasticEconomy.getDefault().format(bounty);
                 return BlobLibTranslatableAPI.getInstance()
                         .getTranslatableSnippet("BlobOutlaw.Bounty")
                         .modder()

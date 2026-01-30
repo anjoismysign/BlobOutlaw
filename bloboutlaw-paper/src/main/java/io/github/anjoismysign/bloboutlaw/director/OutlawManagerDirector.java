@@ -33,7 +33,7 @@ public class OutlawManagerDirector extends GenericManagerDirector<BlobOutlaw> {
      */
     @Override
     public void reload() {
-        Law.Crimes.readData();
+        Law.Crime.readData();
         getConfigManager().reload();
         getListenerManager().reload();
         getLegendaryAnimalManager().reload();

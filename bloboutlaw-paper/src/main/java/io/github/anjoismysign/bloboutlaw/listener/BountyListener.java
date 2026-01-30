@@ -21,13 +21,14 @@ public class BountyListener extends BlobOutlawListener {
     public void onKill(PlayerDeathEvent event) {
         Player potentialVictim = event.getEntity();
         @Nullable Player potentialKiller = potentialVictim.getKiller();
-        if (potentialKiller == null)
+        if (potentialKiller == null) {
             return;
+        }
         BukkitOutlawProfile victim = BlobOutlaw.getInstance().getOutlaw(potentialVictim);
         BukkitOutlawProfile killer = BlobOutlaw.getInstance().getOutlaw(potentialKiller);
 
         boolean raiseBounty = !victim.isWanted() && killer.isWanted();
-        Law.Crimes facingCharge = Law.Crimes.MURDER;
+        Law.Crime facingCharge = Law.Crime.MURDER;
         if (raiseBounty) {
             BehaviourFlagEvent behaviourFlagEvent = new BehaviourFlagEvent(killer, facingCharge, 0, true, potentialVictim);
             Bukkit.getPluginManager().callEvent(behaviourFlagEvent);

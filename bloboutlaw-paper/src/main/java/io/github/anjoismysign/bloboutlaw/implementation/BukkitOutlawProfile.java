@@ -7,7 +7,6 @@ import io.github.anjoismysign.bloboutlaw.BlobOutlaw;
 import io.github.anjoismysign.bloboutlaw.event.BountyClaimEvent;
 import io.github.anjoismysign.bloboutlaw.event.OutlawJoinEvent;
 import io.github.anjoismysign.bloboutlaw.law.Law;
-import io.github.anjoismysign.outlaw.Crime;
 import io.github.anjoismysign.outlaw.Outlaw;
 import io.github.anjoismysign.outlaw.Suppressible;
 import io.github.anjoismysign.psa.PostLoadable;
@@ -30,9 +29,9 @@ public final class BukkitOutlawProfile implements Crudable, Outlaw, Suppressible
     private static final BlobScheduler SCHEDULER = PLUGIN.getScheduler();
 
     private final String identification;
-    private List<Crime> crimes;
+    private List<Law.Crime> crimes;
     private double bounty;
-    private boolean isHostile = false;
+    private boolean isHostile;
     private Law.Status status;
 
     private transient @Nullable PlayerDecorator playerDecorator;
@@ -42,6 +41,9 @@ public final class BukkitOutlawProfile implements Crudable, Outlaw, Suppressible
 
     public BukkitOutlawProfile(String identification) {
         this.identification = identification;
+        this.isHostile = false;
+        this.crimes = new ArrayList<>();
+        this.status = Law.Status.NONE;
         onPostLoad();
     }
 
@@ -94,12 +96,12 @@ public final class BukkitOutlawProfile implements Crudable, Outlaw, Suppressible
         setStatus(Law.Status.NONE);
     }
 
-    public void warrant(@NotNull Crime pressedCharge) {
+    public void warrant(@NotNull Law.Crime pressedCharge) {
         Objects.requireNonNull(pressedCharge, "'pressedCharge' cannot be null");
 
-        boolean isMenace = pressedCharge.equals(Law.Crimes.MURDER) && (crimes.stream().filter(charge -> charge.equals(Law.Crimes.MURDER)).toList().size() > 3 || bounty >= 750.0);
+        boolean isMenace = pressedCharge.equals(Law.Crime.MURDER) && (crimes.stream().filter(charge -> charge.equals(Law.Crime.MURDER)).toList().size() > 3 || bounty >= 750.0);
         if (isMenace) {
-            pressedCharge = Law.Crimes.MENACE;
+            pressedCharge = Law.Crime.MENACE;
             setStatus(Law.Status.MENACE);
         }
         else
@@ -160,7 +162,7 @@ public final class BukkitOutlawProfile implements Crudable, Outlaw, Suppressible
         this.status = status;
     }
 
-    public @NotNull List<Crime> getCrimes() {
+    public @NotNull List<Law.Crime> getCrimes() {
         if (crimes == null){
             crimes = new ArrayList<>();
         }

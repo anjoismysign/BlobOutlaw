@@ -3,7 +3,6 @@ package io.github.anjoismysign.bloboutlaw.law;
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
 import io.github.anjoismysign.bloblib.entities.translatable.TranslatableSnippet;
 import io.github.anjoismysign.bloboutlaw.BlobOutlaw;
-import io.github.anjoismysign.outlaw.Crime;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -78,7 +77,7 @@ public interface Law {
         MAYOR
     }
 
-    enum Crimes implements Crime {
+    enum Crime implements io.github.anjoismysign.outlaw.Crime {
         BORN_EVIL("Spawn as an Outlaw"),
         COMPLICITY("Attempt to free an Outlaw who is being arrested"),
         ASSAULT("Harm a Citizen or Lawman who isn't a Danger while you are hostile"),
@@ -91,7 +90,7 @@ public interface Law {
 
         private final String description;
 
-        Crimes(String description) {
+        Crime(String description) {
             this.description = description;
         }
 
@@ -118,7 +117,7 @@ public interface Law {
                          long term,
                          boolean isDirty){
 
-            static void save(@NotNull Law.Crimes crime,
+            static void save(@NotNull Law.Crime crime,
                                   @NotNull ConfigurationSection configuration){
                 String path = crime.name();
                 String warrantPath = path+".Warrant";
@@ -131,7 +130,7 @@ public interface Law {
                 configuration.set(termPath, term);
             }
 
-            static CrimeData read(@NotNull Law.Crimes crime,
+            static CrimeData read(@NotNull Law.Crime crime,
                                   @NotNull ConfigurationSection configuration){
                 boolean isDirty = false;
                 String path = crime.name();
@@ -157,13 +156,13 @@ public interface Law {
             }
         }
 
-        private static CrimeData getData(@NotNull Law.Crimes crime){
+        private static CrimeData getData(@NotNull Law.Crime crime){
             if (data.isEmpty())
                 readData();
             return data.get(crime);
         }
 
-        private static final Map<Crimes, CrimeData> data = new HashMap<>();
+        private static final Map<Crime, CrimeData> data = new HashMap<>();
         private static final File file = new File(BlobOutlaw.getInstance().getDataFolder(), "crimes.yml");
 
         private static File getFile(){
@@ -182,9 +181,9 @@ public interface Law {
             File file = getFile();
             YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
             boolean isDirty = false;
-            for (Crimes crime : Crimes.values()){
+            for (Crime crime : Crime.values()){
                 CrimeData data = CrimeData.read(crime,configuration);
-                Crimes.data.put(crime, data);
+                Crime.data.put(crime, data);
                 if (data.isDirty)
                     isDirty = true;
             }
