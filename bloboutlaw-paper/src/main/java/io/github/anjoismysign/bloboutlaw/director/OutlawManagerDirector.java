@@ -2,9 +2,10 @@ package io.github.anjoismysign.bloboutlaw.director;
 
 import io.github.anjoismysign.bloblib.entities.GenericManagerDirector;
 import io.github.anjoismysign.bloboutlaw.BlobOutlaw;
-import io.github.anjoismysign.bloboutlaw.director.manager.HookManager;
 import io.github.anjoismysign.bloboutlaw.director.manager.ConfigurationManager;
+import io.github.anjoismysign.bloboutlaw.director.manager.HookManager;
 import io.github.anjoismysign.bloboutlaw.director.manager.OutlawListenerManager;
+import io.github.anjoismysign.bloboutlaw.director.manager.OutlawProfileManager;
 import io.github.anjoismysign.bloboutlaw.director.manager.SafeZoneManager;
 import io.github.anjoismysign.bloboutlaw.law.Law;
 import io.github.anjoismysign.bloboutlaw.legendaryanimal.LegendaryAnimalManager;
@@ -14,6 +15,7 @@ public class OutlawManagerDirector extends GenericManagerDirector<BlobOutlaw> {
 
     public OutlawManagerDirector(BlobOutlaw plugin) {
         super(plugin);
+        addManager("ProfileManager", new OutlawProfileManager(this));
         addManager("ConfigManager",
                 new ConfigurationManager(this));
         addManager("ListenerManager",
@@ -39,7 +41,7 @@ public class OutlawManagerDirector extends GenericManagerDirector<BlobOutlaw> {
 
     @Override
     public void unload(){
-        getPlugin().getOutlawCruder().saveAll();
+        getProfileManager().unload();
     }
 
     @NotNull
@@ -60,5 +62,10 @@ public class OutlawManagerDirector extends GenericManagerDirector<BlobOutlaw> {
     @NotNull
     public final LegendaryAnimalManager getLegendaryAnimalManager() {
         return getManager("LegendaryAnimalManager", LegendaryAnimalManager.class);
+    }
+
+    @NotNull
+    public final OutlawProfileManager getProfileManager(){
+        return getManager("ProfileManager", OutlawProfileManager.class);
     }
 }

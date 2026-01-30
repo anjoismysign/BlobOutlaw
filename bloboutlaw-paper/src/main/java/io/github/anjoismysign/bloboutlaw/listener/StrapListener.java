@@ -4,7 +4,7 @@ import io.github.anjoismysign.bloblib.itemapi.ItemMaterial;
 import io.github.anjoismysign.bloblib.itemapi.ItemMaterialManager;
 import io.github.anjoismysign.bloboutlaw.BlobOutlaw;
 import io.github.anjoismysign.bloboutlaw.director.manager.OutlawListenerManager;
-import io.github.anjoismysign.bloboutlaw.implementation.BukkitOutlaw;
+import io.github.anjoismysign.bloboutlaw.implementation.BukkitOutlawProfile;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -37,10 +37,10 @@ public class StrapListener extends BlobOutlawListener {
         if (victimEntity.getType() != EntityType.PLAYER)
             return;
         Player victimPlayer = (Player) victimEntity;
-        BukkitOutlaw damager = BlobOutlaw.getInstance().getOutlawCruder().get(damagerPlayer);
+        BukkitOutlawProfile damager = BlobOutlaw.getInstance().getOutlaw(damagerPlayer);
         if (damager.isWanted())
             return;
-        BukkitOutlaw victim = BlobOutlaw.getInstance().getOutlawCruder().get(victimPlayer);
+        BukkitOutlawProfile victim = BlobOutlaw.getInstance().getOutlaw(victimPlayer);
         if (!victim.isWanted())
             return;
         if (!victim.isSuppressed())

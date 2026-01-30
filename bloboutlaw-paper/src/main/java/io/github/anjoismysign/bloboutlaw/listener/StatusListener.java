@@ -3,7 +3,7 @@ package io.github.anjoismysign.bloboutlaw.listener;
 import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloboutlaw.BlobOutlaw;
 import io.github.anjoismysign.bloboutlaw.director.manager.OutlawListenerManager;
-import io.github.anjoismysign.bloboutlaw.implementation.BukkitOutlaw;
+import io.github.anjoismysign.bloboutlaw.implementation.BukkitOutlawProfile;
 import io.github.anjoismysign.bloboutlaw.util.WeaponUtil;
 import io.github.anjoismysign.holoworld.asset.DataAsset;
 import org.bukkit.Location;
@@ -41,7 +41,7 @@ public class StatusListener extends BlobOutlawListener {
         if (victim.getType() != EntityType.PLAYER)
             return;
         Player player = (Player) victim;
-        BukkitOutlaw outlaw = BlobOutlaw.getInstance().getOutlawCruder().get(player);
+        BukkitOutlawProfile outlaw = BlobOutlaw.getInstance().getOutlaw(player);
         if (!outlaw.isProtected())
             return;
         event.setCancelled(true);
@@ -65,7 +65,7 @@ public class StatusListener extends BlobOutlawListener {
         String playerName = player.getName();
         int newSlot = event.getNewSlot();
         @Nullable ItemStack itemStack = player.getInventory().getItem(newSlot);
-        BukkitOutlaw outlaw = BlobOutlaw.getInstance().getOutlawCruder().get(player);
+        BukkitOutlawProfile outlaw = BlobOutlaw.getInstance().getOutlaw(player);
         if (itemStack == null) {
 
             if (!hostiles.contains(playerName)) {
@@ -113,12 +113,12 @@ public class StatusListener extends BlobOutlawListener {
     }
 
     public static class ProtectedWarmup {
-        final BukkitOutlaw outlaw;
+        final BukkitOutlawProfile outlaw;
         final String name;
         final BukkitTask task;
         int remainingSeconds = 20;
 
-        public ProtectedWarmup(@NotNull BukkitOutlaw outlaw,
+        public ProtectedWarmup(@NotNull BukkitOutlawProfile outlaw,
                                @NotNull String name) {
             this.outlaw = outlaw;
             this.name = name;

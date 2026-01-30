@@ -1,6 +1,6 @@
 package io.github.anjoismysign.bloboutlaw.event;
 
-import io.github.anjoismysign.bloboutlaw.implementation.BukkitOutlaw;
+import io.github.anjoismysign.bloboutlaw.implementation.BukkitOutlawProfile;
 import io.github.anjoismysign.bloboutlaw.law.Law;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.HandlerList;
@@ -15,7 +15,7 @@ public class BehaviourFlagEvent extends OutlawEvent {
     private double transactionAmount;
     private boolean isCriminal;
 
-    public BehaviourFlagEvent(@NotNull BukkitOutlaw serializable,
+    public BehaviourFlagEvent(@NotNull BukkitOutlawProfile serializable,
                               @Nullable Law.Crimes facingCharge,
                               double transactionAmount,
                               boolean isCriminal,

@@ -46,7 +46,7 @@ public record BukkitPrison(@NotNull String identifier,
     }
 
     @NotNull
-    public Location relative(@Nullable World world) {
+    public Location getOutside(@Nullable World world) {
         return positionable.get().toLocation(world);
     }
 
@@ -83,20 +83,17 @@ public record BukkitPrison(@NotNull String identifier,
         BukkitCell lowestPopulated = Objects.requireNonNull(lowestPopulated(), "there's no Cells at '" + identifier + "' BukkitPrison");
         World world = entity.getWorld();
         Location lowestPopulatedLocation = lowestPopulated.positionable().get().toLocation(world);
-        Location location = relative(world);
+        Location location = getOutside(world);
+        lowestPopulated.addPrisoner(entity);
+        entity.teleport(lowestPopulatedLocation);
         if (entity instanceof Player player) {
-            player.teleport(lowestPopulatedLocation);
             int seconds = (int) (term);
             startCountdown(player, seconds);
-            SCHEDULER.syncLater(() -> {
-                player.teleport(location);
-            }, term * 20);
-        } else {
-            entity.teleport(lowestPopulatedLocation);
-            SCHEDULER.syncLater(() -> {
-                entity.teleport(location);
-            }, term);
         }
+        SCHEDULER.syncLater(() -> {
+            entity.teleport(location);
+        }, term);
+        lowestPopulated.prisoners().remove(entity.getUniqueId());
     }
 
     private void startCountdown(Player player, int seconds) {
@@ -123,7 +120,15 @@ public record BukkitPrison(@NotNull String identifier,
         }.runTaskTimer(JavaPlugin.getPlugin(BlobOutlaw.class), 0L, 20L); // Schedule task to run every second (20 ticks)
     }
 
-    public record Info(@NotNull List<String> cells) implements IdentityGenerator<BukkitPrison> {
+    public static final class Info implements IdentityGenerator<BukkitPrison> {
+        private List<String> cells;
+
+        public Info() {
+        }
+
+        public Info(@NotNull List<String> cells) {
+            this.cells = cells;
+        }
 
         @Override
         public @NotNull BukkitPrison generate(@NotNull String identifier) {
@@ -138,6 +143,14 @@ public record BukkitPrison(@NotNull String identifier,
                 cells.put(bukkitCell.name(), bukkitCell);
             });
             return new BukkitPrison(identifier, cells, positionable);
+        }
+
+        public @NotNull List<String> cells() {
+            return cells;
+        }
+
+        public void setCells(@NotNull List<String> cells) {
+            this.cells = cells;
         }
     }
 

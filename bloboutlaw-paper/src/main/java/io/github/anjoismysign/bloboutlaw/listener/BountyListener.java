@@ -3,7 +3,7 @@ package io.github.anjoismysign.bloboutlaw.listener;
 import io.github.anjoismysign.bloboutlaw.BlobOutlaw;
 import io.github.anjoismysign.bloboutlaw.director.manager.OutlawListenerManager;
 import io.github.anjoismysign.bloboutlaw.event.BehaviourFlagEvent;
-import io.github.anjoismysign.bloboutlaw.implementation.BukkitOutlaw;
+import io.github.anjoismysign.bloboutlaw.implementation.BukkitOutlawProfile;
 import io.github.anjoismysign.bloboutlaw.law.Law;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -23,8 +23,8 @@ public class BountyListener extends BlobOutlawListener {
         @Nullable Player potentialKiller = potentialVictim.getKiller();
         if (potentialKiller == null)
             return;
-        BukkitOutlaw victim = BlobOutlaw.getInstance().getOutlawCruder().get(potentialVictim);
-        BukkitOutlaw killer = BlobOutlaw.getInstance().getOutlawCruder().get(potentialKiller);
+        BukkitOutlawProfile victim = BlobOutlaw.getInstance().getOutlaw(potentialVictim);
+        BukkitOutlawProfile killer = BlobOutlaw.getInstance().getOutlaw(potentialKiller);
 
         boolean raiseBounty = !victim.isWanted() && killer.isWanted();
         Law.Crimes facingCharge = Law.Crimes.MURDER;

@@ -1,4 +1,4 @@
 name: BlobOutlaw
 version: 1.0
 main: io.github.anjoismysign.bloboutlaw.BlobOutlaw
-api-version: 1.21
+api-version: 1.21.11

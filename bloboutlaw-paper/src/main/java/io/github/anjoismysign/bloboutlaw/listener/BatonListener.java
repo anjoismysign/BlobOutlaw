@@ -4,7 +4,7 @@ import io.github.anjoismysign.bloblib.itemapi.ItemMaterial;
 import io.github.anjoismysign.bloblib.itemapi.ItemMaterialManager;
 import io.github.anjoismysign.bloboutlaw.BlobOutlaw;
 import io.github.anjoismysign.bloboutlaw.director.manager.OutlawListenerManager;
-import io.github.anjoismysign.bloboutlaw.implementation.BukkitOutlaw;
+import io.github.anjoismysign.bloboutlaw.implementation.BukkitOutlawProfile;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -38,7 +38,7 @@ public class BatonListener extends BlobOutlawListener {
         if (victimEntity.getType() != EntityType.PLAYER)
             return;
         Player victimPlayer = (Player) victimEntity;
-        BukkitOutlaw victim = BlobOutlaw.getInstance().getOutlawCruder().get(victimPlayer);
+        BukkitOutlawProfile victim = BlobOutlaw.getInstance().getOutlaw(victimPlayer);
         victim.suppress(getConfigManager().getConfiguration().getInhibitTimeOut());
     }
 
@@ -48,7 +48,7 @@ public class BatonListener extends BlobOutlawListener {
         if (damager.getType() != EntityType.PLAYER)
             return;
         Player player = (Player) damager;
-        BukkitOutlaw outlaw = BlobOutlaw.getInstance().getOutlawCruder().get(player);
+        BukkitOutlawProfile outlaw = BlobOutlaw.getInstance().getOutlaw(player);
         if (!outlaw.isSuppressed())
             return;
         event.setCancelled(true);
@@ -60,7 +60,7 @@ public class BatonListener extends BlobOutlawListener {
         if (rider.getType() != EntityType.PLAYER)
             return;
         Player player = (Player) rider;
-        BukkitOutlaw outlaw = BlobOutlaw.getInstance().getOutlawCruder().get(player);
+        BukkitOutlawProfile outlaw = BlobOutlaw.getInstance().getOutlaw(player);
         if (!outlaw.isSuppressed())
             return;
         event.setCancelled(true);

@@ -5,10 +5,12 @@ import io.github.anjoismysign.bloblib.entities.BlobScheduler;
 import io.github.anjoismysign.bloblib.entities.PlayerDecorator;
 import io.github.anjoismysign.bloboutlaw.BlobOutlaw;
 import io.github.anjoismysign.bloboutlaw.event.BountyClaimEvent;
+import io.github.anjoismysign.bloboutlaw.event.OutlawJoinEvent;
 import io.github.anjoismysign.bloboutlaw.law.Law;
 import io.github.anjoismysign.outlaw.Crime;
 import io.github.anjoismysign.outlaw.Outlaw;
 import io.github.anjoismysign.outlaw.Suppressible;
+import io.github.anjoismysign.psa.PostLoadable;
 import io.github.anjoismysign.psa.crud.Crudable;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.ArmorStand;
@@ -23,26 +25,44 @@ import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
 
-public final class BukkitOutlaw implements Crudable, Outlaw, Suppressible {
+public final class BukkitOutlawProfile implements Crudable, Outlaw, Suppressible, PostLoadable {
     private static final BlobOutlaw PLUGIN = BlobOutlaw.getInstance();
     private static final BlobScheduler SCHEDULER = PLUGIN.getScheduler();
 
-    private transient final PlayerDecorator playerDecorator;
     private final String identification;
     private List<Crime> crimes;
     private double bounty;
-    private transient boolean isInSafeZone = true;
     private boolean isHostile = false;
     private Law.Status status;
-    private transient boolean isInhibited = false;
+
+    private transient @Nullable PlayerDecorator playerDecorator;
+    private transient boolean isInSafeZone;
+    private transient boolean isSuppressed;
     private transient ArmorStand seat;
 
-    public BukkitOutlaw(String identification) {
+    public BukkitOutlawProfile(String identification) {
         this.identification = identification;
-        this.playerDecorator = PlayerDecorator.address(identification);
+        onPostLoad();
     }
 
-    public void arrest(@NotNull BukkitOutlaw wanted) {
+    @Override
+    public void onPostLoad() {
+        this.isInSafeZone = true;
+        this.isSuppressed = false;
+    }
+
+    public void cleanup(){
+        Runnable syncRunnable = () -> {
+            removeSuppressible();
+        };
+        if (Bukkit.isPrimaryThread()){
+            syncRunnable.run();
+        } else {
+            Bukkit.getScheduler().runTask(BlobOutlaw.getInstance(), syncRunnable);
+        }
+    }
+
+    public void arrest(@NotNull BukkitOutlawProfile wanted) {
         Player player = wanted.player();
         @Nullable BukkitPrison prison = BukkitPrison.getNearest(player.getLocation());
         Logger logger = BlobOutlaw.getInstance().getLogger();
@@ -55,7 +75,7 @@ public final class BukkitOutlaw implements Crudable, Outlaw, Suppressible {
     }
 
     public void claimBounty(@NotNull Law.BountyClaim claim,
-                            @NotNull BukkitOutlaw wanted) {
+                            @NotNull BukkitOutlawProfile wanted) {
         Player player = wanted.player();
         double amount = wanted.getBounty();
         if (claim == Law.BountyClaim.DEAD)
@@ -90,6 +110,10 @@ public final class BukkitOutlaw implements Crudable, Outlaw, Suppressible {
         bounty = bounty + (raise * getBountyMultiplier());
         setBounty(bounty);
         getCrimes().add(pressedCharge);
+    }
+
+    public boolean isValid(){
+        return playerDecorator != null && playerDecorator.isValid();
     }
 
     @NotNull
@@ -144,14 +168,14 @@ public final class BukkitOutlaw implements Crudable, Outlaw, Suppressible {
     }
     @Override
     public boolean isSuppressed() {
-        return isInhibited;
+        return isSuppressed;
     }
 
     @Override
     public void suppress(long period) {
-        if (isInhibited)
+        if (isSuppressed)
             throw new RuntimeException("Suppressible#isInhibited must be called before!");
-        isInhibited = true;
+        isSuppressed = true;
         Player player = player();
         seat = (ArmorStand) player.getWorld().spawnEntity(player.getLocation(), EntityType.ARMOR_STAND);
         seat.setInvisible(true);
@@ -167,7 +191,7 @@ public final class BukkitOutlaw implements Crudable, Outlaw, Suppressible {
     public void removeSuppressible() {
         if (seat == null)
             return;
-        isInhibited = false;
+        isSuppressed = false;
         seat.remove();
     }
 
@@ -194,5 +218,14 @@ public final class BukkitOutlaw implements Crudable, Outlaw, Suppressible {
     @Override
     public @NotNull String getIdentification() {
         return identification;
+    }
+
+    protected void setPlayerDecorator(PlayerDecorator playerDecorator) {
+        if (this.playerDecorator != null){
+            return;
+        }
+        this.playerDecorator = playerDecorator;
+        OutlawJoinEvent event = new OutlawJoinEvent(this);
+        Bukkit.getPluginManager().callEvent(event);
     }
 }

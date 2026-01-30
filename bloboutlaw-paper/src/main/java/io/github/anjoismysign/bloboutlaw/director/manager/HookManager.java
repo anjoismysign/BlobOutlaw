@@ -5,7 +5,7 @@ import io.github.anjoismysign.bloblib.entities.BlobPHExpansion;
 import io.github.anjoismysign.bloblib.entities.GenericManager;
 import io.github.anjoismysign.bloboutlaw.BlobOutlaw;
 import io.github.anjoismysign.bloboutlaw.director.OutlawManagerDirector;
-import io.github.anjoismysign.bloboutlaw.implementation.BukkitOutlaw;
+import io.github.anjoismysign.bloboutlaw.implementation.BukkitOutlawProfile;
 import io.github.anjoismysign.bloboutlaw.weaponmechanics.WeaponMechanicsHook;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -27,21 +27,21 @@ public class HookManager extends GenericManager<BlobOutlaw, OutlawManagerDirecto
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             BlobPHExpansion expansion = new BlobPHExpansion(plugin);
             expansion.putSimpleRelational("status", (player, playerTwo) -> {
-                BukkitOutlaw outlaw = plugin.getOutlawCruder().get(player);
+                BukkitOutlawProfile outlaw = plugin.getOutlaw(player);
                 return outlaw.getStatus().title(playerTwo);
             });
             expansion.putSimple("status",offlinePlayer -> {
                 @Nullable Player player = offlinePlayer.getPlayer();
                 if (player == null)
                     return "offline";
-                BukkitOutlaw outlaw = plugin.getOutlawCruder().get(player);
+                BukkitOutlawProfile outlaw = plugin.getOutlaw(player);
                 return outlaw.getStatus().title(player);
             });
             expansion.putSimple("bounty", offlinePlayer -> {
                 @Nullable Player player = offlinePlayer.getPlayer();
                 if (player == null)
                     return "offline";
-                BukkitOutlaw outlaw = plugin.getOutlawCruder().get(player);
+                BukkitOutlawProfile outlaw = plugin.getOutlaw(player);
                 if (!outlaw.isWanted())
                     return "";
                 double bounty = outlaw.getBounty();

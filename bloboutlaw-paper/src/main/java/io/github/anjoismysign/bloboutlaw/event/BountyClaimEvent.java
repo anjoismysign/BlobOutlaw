@@ -1,6 +1,6 @@
 package io.github.anjoismysign.bloboutlaw.event;
 
-import io.github.anjoismysign.bloboutlaw.implementation.BukkitOutlaw;
+import io.github.anjoismysign.bloboutlaw.implementation.BukkitOutlawProfile;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
@@ -8,7 +8,7 @@ public class BountyClaimEvent extends BountyEvent {
 
     private static final HandlerList HANDLERS_LIST = new HandlerList();
 
-    public BountyClaimEvent(@NotNull BukkitOutlaw serializable,
+    public BountyClaimEvent(@NotNull BukkitOutlawProfile serializable,
                             double amount) {
         super(serializable, amount);
     }

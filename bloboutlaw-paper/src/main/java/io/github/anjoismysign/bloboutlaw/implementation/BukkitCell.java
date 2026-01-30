@@ -11,6 +11,7 @@ import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,16 @@ public record BukkitCell(@NotNull String identifier,
     public void addPrisoner(@NotNull Entity entity,
                             @Nullable Conviction... convictions) {
         UUID uuid = entity.getUniqueId();
-        Prisoner prisoner = () -> List.of(convictions);
+        Prisoner prisoner = () -> {
+            List<Conviction> list = new ArrayList<>();
+            for (Conviction conviction : convictions) {
+                if (conviction == null) {
+                    continue;
+                }
+                list.add(conviction);
+            }
+            return list;
+        };
         prisoners.put(uuid, prisoner);
     }
 
@@ -44,11 +54,27 @@ public record BukkitCell(@NotNull String identifier,
         prisoners.put(entity.getUniqueId(), () -> convictions);
     }
 
-    public record Info(int capacity) implements IdentityGenerator<BukkitCell> {
+    public static final class Info implements IdentityGenerator<BukkitCell> {
+        private int capacity;
+
+        public Info(){
+        }
+
+        public Info(int capacity) {
+            this.capacity = capacity;
+        }
 
         @Override
         public @NotNull BukkitCell generate(@NotNull String identifier) {
             return new BukkitCell(identifier, new HashMap<>(), identifier, capacity);
+        }
+
+        public int capacity() {
+            return capacity;
+        }
+
+        public void setCapacity(int capacity) {
+            this.capacity = capacity;
         }
     }
 
