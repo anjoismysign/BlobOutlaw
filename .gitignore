@@ -37,3 +37,4 @@ build/
 ### Mac OS ###
 .DS_Store
 /bloboutlaw-paper/libs/
+/.idea/AICommit.xml
