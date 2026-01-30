@@ -5,7 +5,6 @@ import io.github.anjoismysign.bloboutlaw.BlobOutlaw;
 import io.github.anjoismysign.bloboutlaw.director.manager.ConfigurationManager;
 import io.github.anjoismysign.bloboutlaw.director.manager.HookManager;
 import io.github.anjoismysign.bloboutlaw.director.manager.OutlawListenerManager;
-import io.github.anjoismysign.bloboutlaw.director.manager.OutlawProfileManager;
 import io.github.anjoismysign.bloboutlaw.director.manager.SafeZoneManager;
 import io.github.anjoismysign.bloboutlaw.law.Law;
 import io.github.anjoismysign.bloboutlaw.legendaryanimal.LegendaryAnimalManager;
@@ -15,7 +14,6 @@ public class OutlawManagerDirector extends GenericManagerDirector<BlobOutlaw> {
 
     public OutlawManagerDirector(BlobOutlaw plugin) {
         super(plugin);
-        addManager("ProfileManager", new OutlawProfileManager(this));
         addManager("ConfigManager",
                 new ConfigurationManager(this));
         addManager("ListenerManager",
@@ -39,11 +37,6 @@ public class OutlawManagerDirector extends GenericManagerDirector<BlobOutlaw> {
         getLegendaryAnimalManager().reload();
     }
 
-    @Override
-    public void unload(){
-        getProfileManager().unload();
-    }
-
     @NotNull
     public final ConfigurationManager getConfigManager() {
         return getManager("ConfigManager", ConfigurationManager.class);
@@ -64,8 +57,4 @@ public class OutlawManagerDirector extends GenericManagerDirector<BlobOutlaw> {
         return getManager("LegendaryAnimalManager", LegendaryAnimalManager.class);
     }
 
-    @NotNull
-    public final OutlawProfileManager getProfileManager(){
-        return getManager("ProfileManager", OutlawProfileManager.class);
-    }
 }

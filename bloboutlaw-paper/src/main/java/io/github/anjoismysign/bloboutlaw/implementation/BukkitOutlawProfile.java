@@ -5,7 +5,6 @@ import io.github.anjoismysign.bloblib.entities.BlobScheduler;
 import io.github.anjoismysign.bloblib.entities.PlayerDecorator;
 import io.github.anjoismysign.bloboutlaw.BlobOutlaw;
 import io.github.anjoismysign.bloboutlaw.event.BountyClaimEvent;
-import io.github.anjoismysign.bloboutlaw.event.OutlawJoinEvent;
 import io.github.anjoismysign.bloboutlaw.law.Law;
 import io.github.anjoismysign.outlaw.Outlaw;
 import io.github.anjoismysign.outlaw.Suppressible;
@@ -227,7 +226,5 @@ public final class BukkitOutlawProfile implements Crudable, Outlaw, Suppressible
             return;
         }
         this.playerDecorator = playerDecorator;
-        OutlawJoinEvent event = new OutlawJoinEvent(this);
-        Bukkit.getPluginManager().callEvent(event);
     }
 }

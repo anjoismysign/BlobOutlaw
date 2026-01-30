@@ -1,31 +1,26 @@
 package io.github.anjoismysign.bloboutlaw.implementation;
 
 import io.github.anjoismysign.bloblib.api.BlobLibProfileAPI;
+import io.github.anjoismysign.bloblib.entities.AccountCrudable;
 import io.github.anjoismysign.bloblib.entities.PlayerDecorator;
-import io.github.anjoismysign.bloblib.managers.cruder.Cruder;
+import io.github.anjoismysign.bloblib.managers.cruder.ProfileCruder;
 import io.github.anjoismysign.bloboutlaw.BlobOutlaw;
-import io.github.anjoismysign.bloboutlaw.director.manager.OutlawProfileManager;
-import io.github.anjoismysign.bloboutlaw.entity.ProfileView;
 import io.github.anjoismysign.psa.PostLoadable;
-import io.github.anjoismysign.psa.PreUpdatable;
-import io.github.anjoismysign.psa.crud.Crudable;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class BukkitOutlawAccount implements Crudable, PostLoadable, PreUpdatable {
+public class BukkitOutlawAccount implements AccountCrudable<BukkitOutlawProfile>, PostLoadable {
     private transient @NotNull BlobOutlaw plugin;
-    private transient @NotNull OutlawProfileManager manager;
 
     private final @NotNull String identification;
-    private final @NotNull List<ProfileView> profiles;
+    private final @NotNull List<BukkitOutlawProfile> profiles;
     private int currentProfileIndex;
 
-    @SuppressWarnings("NotNullFieldNotInitialized")
-    private transient @NotNull BukkitOutlawProfile currentProfile;
     private transient @NotNull PlayerDecorator playerDecorator;
 
     public BukkitOutlawAccount(@NotNull String identification) {
@@ -37,14 +32,14 @@ public class BukkitOutlawAccount implements Crudable, PostLoadable, PreUpdatable
     @Override
     public void onPostLoad() {
         this.plugin = BlobOutlaw.getInstance();
-        this.manager = plugin.getManagerDirector().getProfileManager();
-        this.playerDecorator = manager.assignPlayerDecorator(identification);
+        @NotNull ProfileCruder<BukkitOutlawAccount, BukkitOutlawProfile> cruder = plugin.getProfileCruder();
+        this.playerDecorator = cruder.assignPlayerDecorator(identification);
         if (!profiles.isEmpty()) {
             if (currentProfileIndex < 0 || currentProfileIndex >= profiles.size()) {
                 currentProfileIndex = 0;
             }
-            ProfileView view = profiles.get(currentProfileIndex);
-            setCurrentProfile(manager.getProfileCruder().readOrGenerate(view.identification()));
+            BukkitOutlawProfile profile = profiles.get(currentProfileIndex);
+            switchToProfile(profile.getIdentification());
         } else {
             var profileAPI = BlobLibProfileAPI.getInstance();
             var provider = profileAPI.getProvider();
@@ -53,52 +48,38 @@ public class BukkitOutlawAccount implements Crudable, PostLoadable, PreUpdatable
                 return;
             }
             var profile = profileManagement.getProfiles().get(0);
-            ProfileView view = new ProfileView(profile.getIdentification(), profile.getName());
-            createProfile(view, true);
+            createProfile(profile.getIdentification(), true);
         }
     }
 
-    @Override
-    public void onPreUpdate() {
-        save();
-    }
-
-    private void save() {
-        manager.getProfileCruder().update(currentProfile);
-    }
-
-    public void createProfile(@NotNull ProfileView profileView,
+    public void createProfile(String identification,
                               boolean switchTo) {
-        //noinspection ConstantValue
-        if (switchTo && currentProfile != null) {
-            save();
-        }
-        Cruder<BukkitOutlawProfile> profileCruder = manager.getProfileCruder();
-        BukkitOutlawProfile profile = profileCruder.createAndUpdate(profileView.identification());
-        this.profiles.add(profileView);
+        BukkitOutlawProfile profile = new BukkitOutlawProfile(identification);
+        this.profiles.add(profile);
         if (!switchTo) {
             return;
         }
-        int index = profiles.indexOf(profileView);
-        setCurrentProfile(profile);
-        currentProfileIndex = index;
+        switchToProfile(identification);
     }
 
-    public void switchToProfile(int index) {
-        //noinspection ConstantValue
-        if (currentProfileIndex != index && currentProfile != null && currentProfile.isValid()){
+    public void switchToProfile(String identification) {
+        var currentProfile = profiles.get(currentProfileIndex);
+        if (!currentProfile.getIdentification().equals(identification) && currentProfile.isValid()){
             currentProfile.cleanup();
         }
-        ProfileView target = profiles.get(index);
-        Runnable runnable = () -> {
-            save();
-            setCurrentProfile(manager.getProfileCruder().readOrGenerate(target.identification()));
+        @Nullable BukkitOutlawProfile target = profiles.stream().filter(profile->profile.getIdentification().equals(identification)).findFirst().orElse(null);
+        if (target == null){
+            return;
+        }
+        int index = profiles.indexOf(target);
+        Runnable syncRunnable = () -> {
+            target.setPlayerDecorator(playerDecorator);
             this.currentProfileIndex = index;
         };
         if (Bukkit.isPrimaryThread()) {
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, runnable);
+            syncRunnable.run();
         } else {
-            runnable.run();
+            Bukkit.getScheduler().runTask(plugin, syncRunnable);
         }
     }
 
@@ -107,27 +88,11 @@ public class BukkitOutlawAccount implements Crudable, PostLoadable, PreUpdatable
         return identification;
     }
 
-    public int getCurrentProfileIndex() {
-        return currentProfileIndex;
-    }
-
-    public @NotNull List<ProfileView> getProfiles() {
+    public @NotNull List<BukkitOutlawProfile> getProfiles() {
         return profiles;
     }
 
-    public void setCurrentProfile(@NotNull BukkitOutlawProfile profile) {
-        this.currentProfile = profile;
-        Runnable syncRunnable = () -> {
-            profile.setPlayerDecorator(playerDecorator);
-        };
-        if (Bukkit.isPrimaryThread()){
-            syncRunnable.run();
-        } else {
-            Bukkit.getScheduler().runTask(plugin, syncRunnable);
-        }
-    }
-
     public @NotNull BukkitOutlawProfile getCurrentProfile() {
-        return currentProfile;
+        return profiles.get(currentProfileIndex);
     }
 }
