@@ -2,7 +2,9 @@ package io.github.anjoismysign.bloboutlaw.implementation;
 
 import io.github.anjoismysign.bloblib.api.BlobLibEconomyAPI;
 import io.github.anjoismysign.bloblib.entities.BlobScheduler;
+import io.github.anjoismysign.bloblib.entities.Cleanable;
 import io.github.anjoismysign.bloblib.entities.PlayerDecorator;
+import io.github.anjoismysign.bloblib.entities.PlayerDecoratorAware;
 import io.github.anjoismysign.bloboutlaw.BlobOutlaw;
 import io.github.anjoismysign.bloboutlaw.event.BountyClaimEvent;
 import io.github.anjoismysign.bloboutlaw.law.Law;
@@ -23,7 +25,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
 
-public final class BukkitOutlawProfile implements Crudable, Outlaw, Suppressible, PostLoadable {
+public final class BukkitOutlawProfile implements Crudable, Outlaw, Suppressible, Cleanable, PlayerDecoratorAware, PostLoadable {
     private static final BlobOutlaw PLUGIN = BlobOutlaw.getInstance();
     private static final BlobScheduler SCHEDULER = PLUGIN.getScheduler();
 
@@ -52,6 +54,15 @@ public final class BukkitOutlawProfile implements Crudable, Outlaw, Suppressible
         this.isSuppressed = false;
     }
 
+    @Override
+    public void setPlayerDecorator(@NotNull PlayerDecorator playerDecorator) {
+        if (this.playerDecorator != null){
+            return;
+        }
+        this.playerDecorator = playerDecorator;
+    }
+
+    @Override
     public void cleanup(){
         Runnable syncRunnable = () -> {
             removeSuppressible();
@@ -113,13 +124,9 @@ public final class BukkitOutlawProfile implements Crudable, Outlaw, Suppressible
         getCrimes().add(pressedCharge);
     }
 
-    public boolean isValid(){
-        return playerDecorator != null && playerDecorator.isValid();
-    }
-
-    @NotNull
+    @Nullable
     public Player player() {
-        return Objects.requireNonNull(playerDecorator.address().look(), "why is 'player' null?");
+        return playerDecorator == null ? null : playerDecorator.lookup();
     }
 
     public double getBounty() {
@@ -221,10 +228,4 @@ public final class BukkitOutlawProfile implements Crudable, Outlaw, Suppressible
         return identification;
     }
 
-    protected void setPlayerDecorator(PlayerDecorator playerDecorator) {
-        if (this.playerDecorator != null){
-            return;
-        }
-        this.playerDecorator = playerDecorator;
-    }
 }

@@ -2,7 +2,6 @@ package io.github.anjoismysign.bloboutlaw.director.manager;
 
 import io.github.anjoismysign.bloboutlaw.director.OutlawManager;
 import io.github.anjoismysign.bloboutlaw.director.OutlawManagerDirector;
-import io.github.anjoismysign.bloboutlaw.implementation.BukkitOutlawProfile;
 import io.github.anjoismysign.bloboutlaw.util.SafeZoneUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -13,8 +12,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-
 public class SafeZoneManager extends OutlawManager implements Listener {
     private final SafeZoneUtil util;
 
@@ -23,13 +20,17 @@ public class SafeZoneManager extends OutlawManager implements Listener {
         this.util = new SafeZoneUtil(managerDirector.getConfigManager());
         Bukkit.getPluginManager().registerEvents(this, getPlugin());
         Bukkit.getScheduler().runTaskTimer(getPlugin(), () -> {
-            List<BukkitOutlawProfile> active = Bukkit.getOnlinePlayers()
-                    .stream()
-                    .map(player -> getPlugin().getOutlaw(player))
-                    .filter(BukkitOutlawProfile::isValid)
-                    .toList();
+            @Nullable var cruder = getPlugin().getAccountCruder();
+            //noinspection ConstantValue
+            if (cruder == null){
+                return;
+            }
+            var active = cruder.getAccounts();
             active.forEach(outlaw -> {
                 Player player = outlaw.player();
+                if (player == null){
+                    return;
+                }
                 Location playerLocation = player.getLocation();
                 outlaw.setInSafeZone(util.isInSafeZone(playerLocation));
             });

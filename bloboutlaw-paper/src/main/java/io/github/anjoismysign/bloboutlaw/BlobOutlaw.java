@@ -3,7 +3,7 @@ package io.github.anjoismysign.bloboutlaw;
 import io.github.anjoismysign.bloblib.managers.BlobPlugin;
 import io.github.anjoismysign.bloblib.managers.PluginManager;
 import io.github.anjoismysign.bloblib.managers.asset.BukkitIdentityManager;
-import io.github.anjoismysign.bloblib.managers.cruder.ProfileCruder;
+import io.github.anjoismysign.bloblib.managers.cruder.AccountCruder;
 import io.github.anjoismysign.bloboutlaw.director.OutlawManagerDirector;
 import io.github.anjoismysign.bloboutlaw.implementation.BukkitCell;
 import io.github.anjoismysign.bloboutlaw.implementation.BukkitOutlawAccount;
@@ -14,6 +14,7 @@ import io.github.anjoismysign.bloboutlaw.legendaryanimal.LegendaryAnimalSpawner;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -26,7 +27,7 @@ public final class BlobOutlaw extends BlobPlugin {
     private BukkitIdentityManager<BukkitPrison> bukkitPrisonManager;
     private BukkitIdentityManager<LegendaryAnimal> legendaryAnimalManager;
     private BukkitIdentityManager<LegendaryAnimalSpawner> legendaryAnimalSpawnerManager;
-    private ProfileCruder<BukkitOutlawAccount, BukkitOutlawProfile> profileCruder;
+    private AccountCruder<BukkitOutlawAccount, BukkitOutlawProfile> accountCruder;
 
     public static BlobOutlaw getInstance() {
         return INSTANCE;
@@ -44,13 +45,14 @@ public final class BlobOutlaw extends BlobPlugin {
         legendaryAnimalSpawnerManager = pluginManager.addIdentityManager(LegendaryAnimalSpawner.Info.class, this, "legendary animal spawner", true);
 
         Bukkit.getScheduler().runTask(this, ()->{
-           profileCruder = new ProfileCruder<>(this, BukkitOutlawAccount.class, BukkitOutlawAccount::new);
+           accountCruder = new AccountCruder<>(this, BukkitOutlawAccount.class, BukkitOutlawProfile.class);
         });
     }
 
     @Override
     public void onDisable(){
         super.onDisable();
+        accountCruder.shutdown();
     }
 
     @NotNull
@@ -75,13 +77,13 @@ public final class BlobOutlaw extends BlobPlugin {
     }
 
     @NotNull
-    public ProfileCruder<BukkitOutlawAccount, BukkitOutlawProfile> getProfileCruder(){
-        return profileCruder;
+    public AccountCruder<BukkitOutlawAccount, BukkitOutlawProfile> getAccountCruder(){
+        return accountCruder;
     }
 
-    @NotNull
+    @Nullable
     public BukkitOutlawProfile getOutlaw(@NotNull Player player){
         Objects.requireNonNull(player, "player cannot be null");
-        return profileCruder.getAccount(player).getCurrentProfile();
+        return accountCruder.getAccount(player);
     }
 }
