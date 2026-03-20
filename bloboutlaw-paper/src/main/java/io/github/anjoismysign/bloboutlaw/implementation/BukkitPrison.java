@@ -7,6 +7,7 @@ import io.github.anjoismysign.bloblib.entities.message.BlobMessage;
 import io.github.anjoismysign.bloblib.entities.translatable.TranslatablePositionable;
 import io.github.anjoismysign.bloblib.managers.asset.BukkitIdentityManager;
 import io.github.anjoismysign.bloboutlaw.BlobOutlaw;
+import io.github.anjoismysign.bloboutlaw.configuration.OutlawConfiguration;
 import io.github.anjoismysign.holoworld.asset.DataAsset;
 import io.github.anjoismysign.holoworld.asset.DataAssetEntry;
 import io.github.anjoismysign.holoworld.asset.IdentityGenerator;
@@ -16,12 +17,14 @@ import io.github.anjoismysign.outlaw.Prison;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -72,12 +75,24 @@ public record BukkitPrison(@NotNull String identifier,
 
     public void addPrisoner(@NotNull Entity entity,
                             @Nullable Conviction... convictions) {
-        addPrisoner(entity, List.of(convictions));
+        List<Conviction> convictionList = new ArrayList<>();
+        if (convictions != null) {
+            for (@Nullable Conviction conviction : convictions) {
+                if (conviction == null) {
+                    continue;
+                }
+                convictionList.add(conviction);
+            }
+        }
+        addPrisoner(entity, convictionList);
     }
 
     public void addPrisoner(@NotNull Entity entity,
                             @Nullable List<? extends Conviction> convictions) {
-        long term = convictions.stream()
+        OutlawConfiguration configuration = OutlawConfiguration.getInstance();
+        long term = convictions == null
+                ? configuration.getFallbackPrisonTerm()
+                : convictions.stream()
                 .mapToLong(Conviction::getTerm)
                 .sum();
         BukkitCell lowestPopulated = Objects.requireNonNull(lowestPopulated(), "there's no Cells at '" + identifier + "' BukkitPrison");
@@ -92,6 +107,12 @@ public record BukkitPrison(@NotNull String identifier,
         }
         SCHEDULER.syncLater(() -> {
             entity.teleport(location);
+            if (entity.getType() == EntityType.PLAYER){
+                Player player = (Player) entity;
+                configuration.getOnReleaseRun().forEach(commandData -> {
+                    commandData.apply(player);
+                });
+            }
         }, term);
         lowestPopulated.prisoners().remove(entity.getUniqueId());
     }

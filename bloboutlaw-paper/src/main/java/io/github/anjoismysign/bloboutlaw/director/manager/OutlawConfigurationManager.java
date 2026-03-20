@@ -12,10 +12,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Set;
 
-public class ConfigurationManager extends OutlawManager {
+public class OutlawConfigurationManager extends OutlawManager {
     private OutlawConfiguration configuration;
 
-    public ConfigurationManager(OutlawManagerDirector managerDirector) {
+    public OutlawConfigurationManager(OutlawManagerDirector managerDirector) {
         super(managerDirector);
         reload();
     }

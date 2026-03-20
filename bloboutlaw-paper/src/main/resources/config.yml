@@ -5,3 +5,7 @@ inhibitTimeOut: 200
 bountyGrantsMenace: 150.0
 # the safe zones by their identifier
 safeZones: []
+# in case a player is sent to prison and has no convictions, in seconds
+fallbackPrisonTerm: 10
+# which commands to run when a player is released from prison. '%player%' is the player's name
+onReleaseRun: []

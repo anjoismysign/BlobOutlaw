@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloboutlaw.listener;
 
 import io.github.anjoismysign.bloblib.entities.BlobListener;
-import io.github.anjoismysign.bloboutlaw.director.manager.ConfigurationManager;
+import io.github.anjoismysign.bloboutlaw.director.manager.OutlawConfigurationManager;
 import io.github.anjoismysign.bloboutlaw.director.manager.OutlawListenerManager;
 
 public abstract class BlobOutlawListener implements BlobListener {
@@ -15,7 +15,7 @@ public abstract class BlobOutlawListener implements BlobListener {
         return listenerManager;
     }
 
-    public ConfigurationManager getConfigManager() {
+    public OutlawConfigurationManager getConfigManager() {
         return getListenerManager().getManagerDirector().getConfigManager();
     }
 

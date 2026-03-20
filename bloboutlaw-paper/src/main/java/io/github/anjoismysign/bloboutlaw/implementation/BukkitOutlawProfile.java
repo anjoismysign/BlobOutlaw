@@ -75,29 +75,29 @@ public final class BukkitOutlawProfile implements Crudable, Outlaw, Suppressible
     }
 
     public void arrest(@NotNull BukkitOutlawProfile wanted) {
-        Player player = wanted.player();
-        @Nullable BukkitPrison prison = BukkitPrison.getNearest(player.getLocation());
+        Player wantedPlayer = wanted.player();
+        @Nullable BukkitPrison prison = BukkitPrison.getNearest(wantedPlayer.getLocation());
         Logger logger = BlobOutlaw.getInstance().getLogger();
         if (prison == null) {
             logger.severe("There are no BukkitPrison set up yet, while players are trying to arrest between them");
             return;
         }
-        prison.addPrisoner(player, wanted.crimes);
+        prison.addPrisoner(wantedPlayer, wanted.crimes);
+        wantedPlayer.getInventory().clear();
         claimBounty(Law.BountyClaim.ALIVE, wanted);
     }
 
     public void claimBounty(@NotNull Law.BountyClaim claim,
                             @NotNull BukkitOutlawProfile wanted) {
-        Player player = wanted.player();
+        Player bountyHunter = player();
         double amount = wanted.getBounty();
         if (claim == Law.BountyClaim.DEAD)
-            bounty = bounty / 2;
-        player.getInventory().clear();
+            amount = bounty / 2;
         wanted.clearCharges();
         BountyClaimEvent bountyClaimEvent = new BountyClaimEvent(this, amount);
         Bukkit.getPluginManager().callEvent(bountyClaimEvent);
         amount = bountyClaimEvent.getAmount();
-        BlobLibEconomyAPI.getInstance().getElasticEconomy().getDefault().depositPlayer(player, amount);
+        BlobLibEconomyAPI.getInstance().getElasticEconomy().getDefault().depositPlayer(bountyHunter, amount);
     }
 
     public void clearCharges() {

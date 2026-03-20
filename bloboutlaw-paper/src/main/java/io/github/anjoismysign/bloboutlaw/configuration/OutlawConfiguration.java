@@ -1,13 +1,23 @@
 package io.github.anjoismysign.bloboutlaw.configuration;
 
+import io.github.anjoismysign.bloblib.entities.CommandData;
+import io.github.anjoismysign.bloboutlaw.BlobOutlaw;
+
+import java.util.List;
 import java.util.Set;
 
 public class OutlawConfiguration {
+
+    public static OutlawConfiguration getInstance(){
+        return BlobOutlaw.getInstance().getManagerDirector().getConfigManager().getConfiguration();
+    }
 
     private boolean tinyDebug;
     private long inhibitTimeOut;
     private double bountyGrantsMenace;
     private Set<String> safeZones;
+    private long fallbackPrisonTerm;
+    private List<CommandData> onReleaseRun;
 
     OutlawConfiguration() {
     }
@@ -42,5 +52,21 @@ public class OutlawConfiguration {
 
     public void setSafeZones(Set<String> safeZones) {
         this.safeZones = safeZones;
+    }
+
+    public long getFallbackPrisonTerm() {
+        return fallbackPrisonTerm;
+    }
+
+    public void setFallbackPrisonTerm(long fallbackPrisonTerm) {
+        this.fallbackPrisonTerm = fallbackPrisonTerm;
+    }
+
+    public List<CommandData> getOnReleaseRun() {
+        return onReleaseRun;
+    }
+
+    public void setOnReleaseRun(List<CommandData> onReleaseRun) {
+        this.onReleaseRun = onReleaseRun;
     }
 }

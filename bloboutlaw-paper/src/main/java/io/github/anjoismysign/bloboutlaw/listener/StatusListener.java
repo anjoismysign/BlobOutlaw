@@ -1,12 +1,9 @@
 package io.github.anjoismysign.bloboutlaw.listener;
 
-import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloboutlaw.BlobOutlaw;
 import io.github.anjoismysign.bloboutlaw.director.manager.OutlawListenerManager;
 import io.github.anjoismysign.bloboutlaw.implementation.BukkitOutlawProfile;
 import io.github.anjoismysign.bloboutlaw.util.WeaponUtil;
-import io.github.anjoismysign.holoworld.asset.DataAsset;
-import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -67,7 +64,6 @@ public class StatusListener extends BlobOutlawListener {
         @Nullable ItemStack itemStack = player.getInventory().getItem(newSlot);
         BukkitOutlawProfile outlaw = BlobOutlaw.getInstance().getOutlaw(player);
         if (itemStack == null) {
-
             if (!hostiles.contains(playerName)) {
                 return;
             }
@@ -94,17 +90,6 @@ public class StatusListener extends BlobOutlawListener {
         String name = player.getName();
         hostiles.remove(name);
         protectedWarmups.remove(name);
-    }
-
-    public boolean isInSafeZone(@NotNull Location location) {
-        Set<String> safeZones = getConfigManager().getSafeZones();
-        return BlobLib.getInstance().getTranslatableAreaManager().unorderedContains(location)
-                .stream()
-                .map(DataAsset::identifier)
-                .filter(safeZones::contains)
-                .findFirst()
-                .orElse(null)
-                != null;
     }
 
     @Override
