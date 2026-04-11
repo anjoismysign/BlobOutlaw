@@ -6,7 +6,6 @@ import io.github.anjoismysign.bloboutlaw.director.manager.HookManager;
 import io.github.anjoismysign.bloboutlaw.director.manager.OutlawConfigurationManager;
 import io.github.anjoismysign.bloboutlaw.director.manager.OutlawListenerManager;
 import io.github.anjoismysign.bloboutlaw.director.manager.SafeZoneManager;
-import io.github.anjoismysign.bloboutlaw.law.Law;
 import io.github.anjoismysign.bloboutlaw.legendaryanimal.LegendaryAnimalManager;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,7 +30,6 @@ public class OutlawManagerDirector extends GenericManagerDirector<BlobOutlaw> {
      */
     @Override
     public void reload() {
-        Law.Crime.readData();
         getConfigManager().reload();
         getListenerManager().reload();
         getLegendaryAnimalManager().reload();

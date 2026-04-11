@@ -90,7 +90,7 @@ public record BukkitPrison(@NotNull String identifier,
     public void addPrisoner(@NotNull Entity entity,
                             @Nullable List<? extends Conviction> convictions) {
         OutlawConfiguration configuration = OutlawConfiguration.getInstance();
-        long term = convictions == null
+        long termInSeconds = convictions == null
                 ? configuration.getFallbackPrisonTerm()
                 : convictions.stream()
                 .mapToLong(Conviction::getTerm)
@@ -102,7 +102,11 @@ public record BukkitPrison(@NotNull String identifier,
         lowestPopulated.addPrisoner(entity);
         entity.teleport(lowestPopulatedLocation);
         if (entity instanceof Player player) {
-            int seconds = (int) (term);
+            int seconds = (int) (termInSeconds);
+            @Nullable BukkitOutlawProfile outlaw = BlobOutlaw.getInstance().getOutlaw(player);
+            if (outlaw != null){
+                outlaw.removeSuppressible();
+            }
             startCountdown(player, seconds);
         }
         SCHEDULER.syncLater(() -> {
@@ -113,7 +117,7 @@ public record BukkitPrison(@NotNull String identifier,
                     commandData.apply(player);
                 });
             }
-        }, term);
+        }, termInSeconds * 20);
         lowestPopulated.prisoners().remove(entity.getUniqueId());
     }
 

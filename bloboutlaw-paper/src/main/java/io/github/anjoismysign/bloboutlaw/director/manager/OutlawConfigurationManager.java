@@ -3,6 +3,7 @@ package io.github.anjoismysign.bloboutlaw.director.manager;
 import io.github.anjoismysign.bloboutlaw.configuration.OutlawConfiguration;
 import io.github.anjoismysign.bloboutlaw.director.OutlawManager;
 import io.github.anjoismysign.bloboutlaw.director.OutlawManagerDirector;
+import io.github.anjoismysign.bloboutlaw.law.Law;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -24,6 +25,7 @@ public class OutlawConfigurationManager extends OutlawManager {
     public void reload() {
         File pluginDataFolder = getPlugin().getDataFolder();
 
+        Law.Crime.readData();
         getManagerDirector().detachAsset("config.yml", false, pluginDataFolder);
 
         File configurationFile = new File(pluginDataFolder, "config.yml");

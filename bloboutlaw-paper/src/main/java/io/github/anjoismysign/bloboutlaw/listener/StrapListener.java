@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 public class StrapListener extends BlobOutlawListener {
 
@@ -37,14 +38,23 @@ public class StrapListener extends BlobOutlawListener {
         if (victimEntity.getType() != EntityType.PLAYER)
             return;
         Player victimPlayer = (Player) victimEntity;
-        BukkitOutlawProfile damager = BlobOutlaw.getInstance().getOutlaw(damagerPlayer);
-        if (damager.isWanted())
+        @Nullable BukkitOutlawProfile damager = BlobOutlaw.getInstance().getOutlaw(damagerPlayer);
+        if (damager == null){
             return;
-        BukkitOutlawProfile victim = BlobOutlaw.getInstance().getOutlaw(victimPlayer);
-        if (!victim.isWanted())
+        }
+        if (damager.isWanted()) {
             return;
-        if (!victim.isSuppressed())
+        }
+        @Nullable BukkitOutlawProfile victim = BlobOutlaw.getInstance().getOutlaw(victimPlayer);
+        if (victim == null){
             return;
+        }
+        if (!victim.isWanted()) {
+            return;
+        }
+        if (!victim.isSuppressed()) {
+            return;
+        }
         damager.arrest(victim);
     }
 

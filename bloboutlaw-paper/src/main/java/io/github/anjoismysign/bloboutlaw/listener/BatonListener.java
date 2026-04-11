@@ -13,6 +13,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDismountEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 public class BatonListener extends BlobOutlawListener {
 
@@ -38,7 +39,13 @@ public class BatonListener extends BlobOutlawListener {
         if (victimEntity.getType() != EntityType.PLAYER)
             return;
         Player victimPlayer = (Player) victimEntity;
-        BukkitOutlawProfile victim = BlobOutlaw.getInstance().getOutlaw(victimPlayer);
+        @Nullable BukkitOutlawProfile victim = BlobOutlaw.getInstance().getOutlaw(victimPlayer);
+        if (victim == null){
+            return;
+        }
+        if (victim.isSuppressed()){
+            return;
+        }
         victim.suppress(getConfigManager().getConfiguration().getInhibitTimeOut());
     }
 

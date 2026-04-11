@@ -104,13 +104,11 @@ public interface Law {
         }
 
         public long getTerm() {
-            CrimeData crimeData = getData(this);
-            return crimeData.term;
+            return Crime.data.get(this).term;
         }
 
         public double getWarrant(){
-            CrimeData crimeData = getData(this);
-            return crimeData.warrant;
+            return Crime.data.get(this).warrant;
         }
 
         record CrimeData(double warrant,
@@ -118,7 +116,7 @@ public interface Law {
                          boolean isDirty){
 
             static void save(@NotNull Law.Crime crime,
-                                  @NotNull ConfigurationSection configuration){
+                             @NotNull ConfigurationSection configuration){
                 String path = crime.name();
                 String warrantPath = path+".Warrant";
                 String termPath = path+".Term";
@@ -145,21 +143,15 @@ public interface Law {
                     isDirty = true;
                 }
                 long term;
-                if (configuration.isLong(termPath)) {
+                if (configuration.isInt(termPath) || configuration.isLong(termPath)) {
                     term = configuration.getLong(termPath);
                 } else {
                     term = 5L;
-                    configuration.set(termPath, BigDecimal.valueOf(warrant));
+                    configuration.set(termPath, term);
                     isDirty = true;
                 }
                 return new CrimeData(warrant, term, isDirty);
             }
-        }
-
-        private static CrimeData getData(@NotNull Law.Crime crime){
-            if (data.isEmpty())
-                readData();
-            return data.get(crime);
         }
 
         private static final Map<Crime, CrimeData> data = new HashMap<>();
