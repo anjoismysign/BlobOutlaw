@@ -26,18 +26,22 @@ public class BatonListener extends BlobOutlawListener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onSuppress(EntityDamageByEntityEvent event) {
         Entity damagerEntity = event.getDamager();
-        if (damagerEntity.getType() != EntityType.PLAYER)
+        if (damagerEntity.getType() != EntityType.PLAYER) {
             return;
+        }
         Player damagerPlayer = (Player) damagerEntity;
         ItemStack mainHand = damagerPlayer.getInventory().getItemInMainHand();
         ItemMaterial material = ItemMaterialManager.getInstance().of(mainHand);
-        if (material == null)
+        if (material == null) {
             return;
-        if (!material.isInstance(reference))
+        }
+        if (!material.isInstance(reference)) {
             return;
+        }
         Entity victimEntity = event.getEntity();
-        if (victimEntity.getType() != EntityType.PLAYER)
+        if (victimEntity.getType() != EntityType.PLAYER) {
             return;
+        }
         Player victimPlayer = (Player) victimEntity;
         @Nullable BukkitOutlawProfile victim = BlobOutlaw.getInstance().getOutlaw(victimPlayer);
         if (victim == null){
@@ -52,24 +56,28 @@ public class BatonListener extends BlobOutlawListener {
     @EventHandler(ignoreCancelled = true)
     public void onInhibitedAttemptsDamage(EntityDamageByEntityEvent event) {
         Entity damager = event.getDamager();
-        if (damager.getType() != EntityType.PLAYER)
+        if (damager.getType() != EntityType.PLAYER) {
             return;
+        }
         Player player = (Player) damager;
         BukkitOutlawProfile outlaw = BlobOutlaw.getInstance().getOutlaw(player);
-        if (!outlaw.isSuppressed())
+        if (!outlaw.isSuppressed()) {
             return;
+        }
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onInhibitedAttemptsMove(EntityDismountEvent event) {
         Entity rider = event.getEntity();
-        if (rider.getType() != EntityType.PLAYER)
+        if (rider.getType() != EntityType.PLAYER) {
             return;
+        }
         Player player = (Player) rider;
         BukkitOutlawProfile outlaw = BlobOutlaw.getInstance().getOutlaw(player);
-        if (!outlaw.isSuppressed())
+        if (!outlaw.isSuppressed()) {
             return;
+        }
         event.setCancelled(true);
     }
 
