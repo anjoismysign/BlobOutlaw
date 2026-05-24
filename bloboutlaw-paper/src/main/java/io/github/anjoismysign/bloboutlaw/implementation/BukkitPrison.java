@@ -148,13 +148,6 @@ public record BukkitPrison(@NotNull String identifier,
     public static final class Info implements IdentityGenerator<BukkitPrison> {
         private List<String> cells;
 
-        public Info() {
-        }
-
-        public Info(@NotNull List<String> cells) {
-            this.cells = cells;
-        }
-
         @Override
         public @NotNull BukkitPrison generate(@NotNull String identifier) {
             TranslatablePositionable positionable = Objects.requireNonNull(BlobLibTranslatableAPI.getInstance().getTranslatablePositionable(identifier), "'" + identifier + "' doesn't point to a TranslatablePositionable");

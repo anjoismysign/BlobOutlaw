@@ -57,13 +57,6 @@ public record BukkitCell(@NotNull String identifier,
     public static final class Info implements IdentityGenerator<BukkitCell> {
         private int capacity;
 
-        public Info(){
-        }
-
-        public Info(int capacity) {
-            this.capacity = capacity;
-        }
-
         @Override
         public @NotNull BukkitCell generate(@NotNull String identifier) {
             return new BukkitCell(identifier, new HashMap<>(), identifier, capacity);
