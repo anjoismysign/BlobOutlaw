@@ -22,16 +22,7 @@ public record LegendaryAnimal(@NotNull String identifier,
                               double speed,
                               double scale,
                               double chance,
-                              @NotNull List<String> legendaryDrops) implements DataAsset {
-
-    public List<ItemStack> getLegendaryDrops() {
-        return legendaryDrops
-                .stream()
-                .map(TranslatableItem::by)
-                .filter(Objects::nonNull)
-                .map(TranslatableItem::getClone)
-                .toList();
-    }
+                              @NotNull String lootTable) implements DataAsset {
 
     public void instantiate(@NotNull Mob mob) {
         if (mob.getType() != type)
@@ -55,7 +46,7 @@ public record LegendaryAnimal(@NotNull String identifier,
                        @NotNull String speed,
                        @NotNull String scale,
                        @NotNull String chance,
-                       @NotNull List<String> legendaryDrops) implements IdentityGenerator<LegendaryAnimal> {
+                       @NotNull String lootTable) implements IdentityGenerator<LegendaryAnimal> {
 
         @NotNull
         @Override
@@ -69,7 +60,7 @@ public record LegendaryAnimal(@NotNull String identifier,
             double speed = Double.parseDouble(this.speed);
             double scale = Double.parseDouble(this.scale);
             double chance = Double.parseDouble(this.chance);
-            return new LegendaryAnimal(identifier, type, health, speed, scale, chance, legendaryDrops);
+            return new LegendaryAnimal(identifier, type, health, speed, scale, chance, lootTable);
         }
     }
 }

@@ -1,5 +1,6 @@
 package io.github.anjoismysign.bloboutlaw.legendaryanimal;
 
+import io.github.anjoismysign.bloblib.api.BlobLibLootAPI;
 import io.github.anjoismysign.bloblib.utilities.SerializationLib;
 import io.github.anjoismysign.bloboutlaw.BlobOutlaw;
 import io.github.anjoismysign.bloboutlaw.director.OutlawManager;
@@ -158,7 +159,7 @@ public class LegendaryAnimalManager extends OutlawManager implements Listener {
         }
         List<ItemStack> drops = event.getDrops();
         drops.clear();
-        drops.addAll(legendaryAnimal.getLegendaryDrops());
+        drops.addAll(BlobLibLootAPI.getInstance().generateLoot(legendaryAnimal.lootTable(), null));
         LegendaryAnimalDeathEvent legendaryAnimalDeathEvent = new LegendaryAnimalDeathEvent(normal, drops);
         Bukkit.getPluginManager().callEvent(legendaryAnimalDeathEvent);
     }
