@@ -1,6 +1,5 @@
 package io.github.anjoismysign.bloboutlaw.legendaryanimal;
 
-import io.github.anjoismysign.bloblib.entities.translatable.TranslatableItem;
 import io.github.anjoismysign.bloboutlaw.goal.LegendaryAnimalGoal;
 import io.github.anjoismysign.holoworld.asset.DataAsset;
 import io.github.anjoismysign.holoworld.asset.IdentityGenerator;
@@ -10,11 +9,7 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Mob;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
-import java.util.Objects;
 
 public record LegendaryAnimal(@NotNull String identifier,
                               @NotNull EntityType type,
