@@ -1,0 +1,11 @@
+BlobOutlaw:
+  Status-None:
+    Snippet: ''
+  Status-Protected:
+    Snippet: '&e&l🛡 &r'
+  Status-Killer:
+    Snippet: '&c&l☠ &r'
+  Status-Menace:
+    Snippet: '&4&l☠ &r'
+  Bounty:
+    Snippet: ' &6%bounty%'

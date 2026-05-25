@@ -4,13 +4,18 @@ import io.github.anjoismysign.bloblib.api.BlobLibEconomyAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
 import io.github.anjoismysign.bloblib.entities.BlobPHExpansion;
 import io.github.anjoismysign.bloblib.entities.GenericManager;
+import io.github.anjoismysign.bloblib.entities.tag.TagSet;
+import io.github.anjoismysign.bloblib.entities.translatable.TranslatableItem;
 import io.github.anjoismysign.bloboutlaw.BlobOutlaw;
 import io.github.anjoismysign.bloboutlaw.director.OutlawManagerDirector;
+import io.github.anjoismysign.bloboutlaw.entity.WeaponHandler;
 import io.github.anjoismysign.bloboutlaw.implementation.BukkitOutlawProfile;
+import io.github.anjoismysign.bloboutlaw.util.WeaponUtil;
 import io.github.anjoismysign.bloboutlaw.weaponmechanics.WeaponMechanicsHook;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,6 +24,23 @@ public class HookManager extends GenericManager<BlobOutlaw, OutlawManagerDirecto
     public HookManager(OutlawManagerDirector director) {
         super(director);
         final BlobOutlaw plugin = getPlugin();
+        var weaponUtil = WeaponUtil.INSTANCE;
+        weaponUtil.addWeaponHandler(new WeaponHandler() {
+            @Override
+            public boolean isWeapon(@NotNull ItemStack itemStack) {
+                return TagSet.by("BlobOutlaw.Vanilla-Weapons").contains(itemStack.getType().asItemType().getKey().toString());
+            }
+        });
+        weaponUtil.addWeaponHandler(new WeaponHandler() {
+            @Override
+            public boolean isWeapon(@NotNull ItemStack itemStack) {
+                @Nullable var translatableItem = TranslatableItem.byItemStack(itemStack);
+                if (translatableItem == null){
+                    return false;
+                }
+                return TagSet.by("BlobOutlaw.TranslatableItem-Weapons").contains(translatableItem.identifier());
+            }
+        });
         if (Bukkit.getPluginManager().isPluginEnabled("WeaponMechanics")) {
             Bukkit.getPluginManager().registerEvents(new WeaponMechanicsHook(), plugin);
         }

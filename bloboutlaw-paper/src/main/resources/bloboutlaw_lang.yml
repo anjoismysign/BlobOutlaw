@@ -1,0 +1,12 @@
+BlobOutlaw:
+  Serving:
+    Type: ACTIONBAR
+    Message: '&cServing... &7Time remaining: %seconds% seconds'
+  Served:
+    Type: TITLE
+    Title: '&aServed'
+    Subtitle: '&7Time to go out!'
+    FadeIn: 10
+    Stay: 40
+    FadeOut: 10
+    BlobSound: System.Alert

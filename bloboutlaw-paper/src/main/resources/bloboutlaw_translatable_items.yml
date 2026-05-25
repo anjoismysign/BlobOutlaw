@@ -1,0 +1,15 @@
+BlobOutlaw:
+  Baton:
+    ItemStack:
+      Material: STICK
+      Rarity: COMMON
+      ItemName: Nightstick
+      Lore:
+      - '&7Hit players to inhibit them'
+  Strap:
+    ItemStack:
+      Material: LEAD
+      Rarity: COMMON
+      ItemName: Strap
+      Lore:
+      - '&7Hit to arrest inhibited'
