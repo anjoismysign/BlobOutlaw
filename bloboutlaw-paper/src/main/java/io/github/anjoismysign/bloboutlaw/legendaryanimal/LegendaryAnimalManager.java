@@ -145,13 +145,10 @@ public class LegendaryAnimalManager extends OutlawManager implements Listener {
         if (legendaryAnimal == null) {
             return;
         }
-        var logger = getPlugin().getLogger();
         Mob entity = (Mob) event.getEntity();
         UUID uniqueId = entity.getUniqueId();
         double chance = Math.random();
-        logger.info(chance+" (chance)");
         boolean isLegendary = chance <= legendaryAnimal.chance();
-        logger.info(isLegendary+" (isLegendary 1)");
         String model = isLegendary ? legendaryAnimal.legendaryEntity().model() : legendaryAnimal.defaultEntity().model();
         if (!model.isEmpty()) {
             entity.setSilent(true);

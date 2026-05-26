@@ -36,7 +36,6 @@ public record LegendaryAnimal(@NotNull String identifier,
         if (isLegendary) {
             Bukkit.getMobGoals().addGoal(mob, 3, new LegendaryAnimalGoal(mob));
         }
-        logger.info(isLegendary+" (isLegendary 2)");
         RuntimeEntityBean entityBean = isLegendary ? legendaryEntity : defaultEntity;
         Map<Attribute, AttributeModifier> attributes = entityBean.attributes;
         attributes.forEach((attribute, modifier)->{
@@ -45,8 +44,6 @@ public record LegendaryAnimal(@NotNull String identifier,
                 return;
             }
             instance.addModifier(modifier);
-            logger.info("Applying " + attribute.getKey() + " -> amount=" + modifier.getAmount()
-                    + " op=" + modifier.getOperation() + " to " + mob.getUniqueId());
         });
     }
 
@@ -66,10 +63,6 @@ public record LegendaryAnimal(@NotNull String identifier,
                     throw new IllegalArgumentException("Entity type for '" + identifier + "' is not a Mob!");
                 RuntimeEntityBean runtimeDefaultEntity = defaultEntity.toRuntimeEntityBean();
                 RuntimeEntityBean runtimeLegendaryEntity = legendaryEntity.toRuntimeEntityBean();
-
-                BlobOutlaw.getInstance().getLogger().info("Loaded '" + identifier + "': chance=" + chance
-                                + ", defaultAttr=" + runtimeDefaultEntity.attributes()
-                                + ", legendaryAttr=" + runtimeLegendaryEntity.attributes());
                 return new LegendaryAnimal(identifier, type, chance, runtimeDefaultEntity, runtimeLegendaryEntity);
             }
 
