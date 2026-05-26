@@ -95,7 +95,7 @@ public class LegendaryAnimalManager extends OutlawManager implements Listener {
             return;
         }
         @Nullable EntityTracker tracker = trackers.get(uniqueId);
-        if (tracker != null){
+        if (tracker != null) {
             tracker.close();
         }
         belonging.entities().remove(uniqueId);
