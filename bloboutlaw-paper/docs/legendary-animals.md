@@ -15,21 +15,64 @@ Each file is a `.yml` named after the animal identifier (e.g. `zombie.yml`, `ske
 
 ```yaml
 type: ZOMBIE
-health: "3.0"
-speed: "1.5"
-scale: "1.8"
-chance: "0.05"
-lootTable: "zombie"
+chance: "0.005"
+defaultEntity:
+  attributes:
+    movement_speed:
+      key: "minecraft:movement_speed"
+      operation: ADD_NUMBER
+      amount: 0.1
+      equipmentSlotGroup: any
+  lootTable: ""
+  model: blackant
+legendaryEntity:
+  attributes:
+    max_health:
+      key: "minecraft:max_health"
+      operation: ADD_NUMBER
+      amount: 30.0
+      equipmentSlotGroup: any
+    movement_speed:
+      key: "minecraft:movement_speed"
+      operation: ADD_NUMBER
+      amount: 0.15
+      equipmentSlotGroup: any
+    scale:
+      key: "minecraft:scale"
+      operation: ADD_NUMBER
+      amount: 0.25
+      equipmentSlotGroup: any
+  lootTable: ""
+  model: blackant
 ```
 
 | Field | Type | Description |
 |---|---|---|
 | `type` | EntityType | Any Bukkit mob entity type (e.g. `ZOMBIE`, `SKELETON`, `CREEPER`). Must be a `Mob`. |
-| `health` | String (double) | Health multiplier applied to the mob's base max health. |
-| `speed` | String (double) | Movement speed multiplier. |
-| `scale` | String (double) | Scale multiplier applied to the mob's scale attribute. |
-| `chance` | String (double) | Spawn probability, 0.0 to 1.0. E.g. `"0.05"` = 5% chance. |
-| `lootTable` | String | Identifies the loot table (JSON file in `plugins/BlobLib/LootTable/`) that replaces normal drops on death. |
+| `chance` | String (double) | Spawn probability, 0.0 to 1.0. E.g. `"0.005"` = 0.5% chance. |
+| `defaultEntity` | EntityBean | Configuration applied to normal (non-legendary) spawns of this type. |
+| `legendaryEntity` | EntityBean | Configuration applied when the chance roll succeeds. |
+
+### EntityBean
+
+Applied to the mob when it spawns.
+
+| Field | Type | Description                                                                                                                                                            |
+|---|---|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `attributes` | Map of `attributeKey : AttributeModifierBean` | Attribute modifiers to apply to the mob. Each key is the attribute name (e.g. `max_health`, `movement_speed`, `scale`). See `AttributeModifierBean` below.             |
+| `lootTable` | String | Identifies the loot table (JSON file in `plugins/BlobLib/LootTable/`) that replaces normal drops on death. Leave empty (`""`) to skip (no drops and no vanilla drops). |
+| `model` | String | BetterModel model name to apply to the entity on spawn. Leave empty (`""`) for no custom model.                                                                        |
+
+### AttributeModifierBean
+
+Each attribute entry is an object with the following fields. Inline YAML flow style (`{key: "", operation: ADD_NUMBER, amount: 0, equipmentSlotGroup: any}`) is also accepted.
+
+| Field | Type | Description |
+|---|---|---|
+| `key` | String | Namespaced key identifying this modifier (e.g. `"minecraft:max_health"`). Used as the modifier's unique identifier. |
+| `operation` | AttributeModifier.Operation | How the `amount` is applied. One of `ADD_NUMBER`, `ADD_SCALAR`, or `MULTIPLY_SCALAR_1`. |
+| `amount` | double | The modifier value. Positive for increases, negative for decreases. |
+| `equipmentSlotGroup` | String | Slot group this modifier applies to. Typically `any` for universal modifiers. See Minecraft's `EquipmentSlotGroup` values. |
 
 ---
 
@@ -67,8 +110,9 @@ blocks: []
 - Natural mob spawns are **cancelled** for configured types.
 - Only `SPAWNER_EGG` and `CUSTOM` spawn reasons are allowed to pass through.
 - Each time a mob of a configured type would spawn, the `chance` roll determines whether it becomes legendary.
-- Legendary mobs automatically have `health`, `speed`, and `scale` multipliers applied.
-- On death, the `lootTable` is used to generate drops via BlobLib's loot table system.
+- If legendary, the `legendaryEntity` bean is applied (attributes, model, loot table); otherwise `defaultEntity` is applied instead.
+- Attribute modifiers from the chosen `EntityBean` are attached to the mob on spawn.
+- On death, the mob's `lootTable` is used to generate drops via BlobLib's loot table system.
 
 ---
 
@@ -210,11 +254,35 @@ To replicate the behaviour described in the original request — a legendary sco
 **`plugins/BlobOutlaw/legendary_animal/scorpion.yml`**
 ```yaml
 type: SCORPION
-health: "3.0"
-speed: "1.5"
-scale: "1.8"
 chance: "0.05"
-lootTable: "scorpion"
+defaultEntity:
+  attributes:
+    movement_speed:
+      key: "minecraft:movement_speed"
+      operation: ADD_NUMBER
+      amount: 0.0
+      equipmentSlotGroup: any
+  lootTable: ""
+  model: ""
+legendaryEntity:
+  attributes:
+    max_health:
+      key: "minecraft:max_health"
+      operation: ADD_SCALAR
+      amount: 2.0
+      equipmentSlotGroup: any
+    movement_speed:
+      key: "minecraft:movement_speed"
+      operation: ADD_SCALAR
+      amount: 0.5
+      equipmentSlotGroup: any
+    scale:
+      key: "minecraft:scale"
+      operation: ADD_SCALAR
+      amount: 0.8
+      equipmentSlotGroup: any
+  lootTable: "scorpion"
+  model: ""
 ```
 
 **`plugins/BlobLib/LootTable/scorpion.json`**

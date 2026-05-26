@@ -5,6 +5,9 @@ import io.github.anjoismysign.bloblib.utilities.SerializationLib;
 import io.github.anjoismysign.bloboutlaw.BlobOutlaw;
 import io.github.anjoismysign.bloboutlaw.director.OutlawManager;
 import io.github.anjoismysign.bloboutlaw.director.OutlawManagerDirector;
+import kr.toxicity.model.api.BetterModel;
+import kr.toxicity.model.api.bukkit.platform.BukkitAdapter;
+import kr.toxicity.model.api.tracker.EntityTracker;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -23,6 +26,8 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +36,7 @@ import java.util.UUID;
 
 public class LegendaryAnimalManager extends OutlawManager implements Listener {
     private static LegendaryAnimalManager instance;
+    private final Map<UUID, EntityTracker> trackers = new HashMap<>();
     private final Map<UUID, Mob> legendaryAnimals = new HashMap<>();
     private final Map<Block, LegendaryAnimalSpawner.Task> tasks = new HashMap<>();
     private final Map<EntityType, LegendaryAnimalSpawner> spawners = new HashMap<>();
@@ -58,42 +64,45 @@ public class LegendaryAnimalManager extends OutlawManager implements Listener {
         });
         spawners.clear();
         tasks.clear();
-        Bukkit.getScheduler().runTask(getPlugin(),()->{
+        Bukkit.getScheduler().runTask(getPlugin(), () -> {
             BlobOutlaw blobOutlaw = BlobOutlaw.getInstance();
             blobOutlaw.getLegendaryAnimalManager().forEach(animal -> {
                 types.put(animal.type(), animal);
             });
-            blobOutlaw.getLegendaryAnimalSpawnerManager().forEach(spawner->{
+            blobOutlaw.getLegendaryAnimalSpawnerManager().forEach(spawner -> {
                 @Nullable LegendaryAnimal legendaryAnimal = spawner.legendaryAnimal();
                 if (legendaryAnimal == null)
                     return;
                 spawners.put(legendaryAnimal.type(), spawner);
                 List<Block> blocks = spawner.fetchBlocks();
                 blocks.forEach(block -> {
-                    tasks.put(block, LegendaryAnimalSpawner.Task.of(spawner,block));
+                    tasks.put(block, LegendaryAnimalSpawner.Task.of(spawner, block));
                 });
             });
         });
     }
 
     @EventHandler
-    public void remove(EntityRemoveEvent event){
+    public void remove(EntityRemoveEvent event) {
         Entity entity = event.getEntity();
-        UUID uuid = entity.getUniqueId();
+        UUID uniqueId = entity.getUniqueId();
         @Nullable LegendaryAnimalSpawner.Task belonging = tasks.values()
                 .stream()
-                .filter(task -> {
-                    return task.entities().contains(uuid);
-                })
+                .filter(task -> task.entities().contains(uniqueId))
                 .findFirst()
                 .orElse(null);
-        if (belonging == null)
+        if (belonging == null) {
             return;
-        belonging.entities().remove(uuid);
+        }
+        @Nullable EntityTracker tracker = trackers.get(uniqueId);
+        if (tracker != null){
+            tracker.close();
+        }
+        belonging.entities().remove(uniqueId);
     }
 
     @EventHandler
-    public void spawnerSet(PlayerInteractEvent event){
+    public void spawnerSet(PlayerInteractEvent event) {
         if (event.getHand() != EquipmentSlot.HAND)
             return;
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
@@ -122,44 +131,62 @@ public class LegendaryAnimalManager extends OutlawManager implements Listener {
     }
 
     @EventHandler
-    public void cancelSpawn(CreatureSpawnEvent event){
+    public void cancelSpawn(CreatureSpawnEvent event) {
         CreatureSpawnEvent.SpawnReason reason = event.getSpawnReason();
         if (reason == CreatureSpawnEvent.SpawnReason.CUSTOM || reason == CreatureSpawnEvent.SpawnReason.SPAWNER_EGG)
             return;
         event.setCancelled(true);
     }
 
-    @EventHandler (ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true)
     public void spawn(CreatureSpawnEvent event) {
         EntityType entityType = event.getEntityType();
         @Nullable LegendaryAnimal legendaryAnimal = types.get(entityType);
-        if (legendaryAnimal == null)
-            return;
-        double random = Math.random();
-        if (random > legendaryAnimal.chance()) {
+        if (legendaryAnimal == null) {
             return;
         }
+        var logger = getPlugin().getLogger();
         Mob entity = (Mob) event.getEntity();
+        UUID uniqueId = entity.getUniqueId();
+        double chance = Math.random();
+        logger.info(chance+" (chance)");
+        boolean isLegendary = chance <= legendaryAnimal.chance();
+        logger.info(isLegendary+" (isLegendary 1)");
+        String model = isLegendary ? legendaryAnimal.legendaryEntity().model() : legendaryAnimal.defaultEntity().model();
+        if (!model.isEmpty()) {
+            entity.setSilent(true);
+            EntityTracker tracker = BetterModel.model(model)
+                    .map(r -> r.getOrCreate(BukkitAdapter.adapt(entity)))
+                    .orElse(null);
+            trackers.put(uniqueId, tracker);
+        }
         entity.setPersistent(false);
-        legendaryAnimal.instantiate(entity);
-        legendaryAnimals.put(entity.getUniqueId(), entity);
+        legendaryAnimal.instantiate(entity, isLegendary);
+        if (!isLegendary) {
+            return;
+        }
+        legendaryAnimals.put(uniqueId, entity);
         LegendaryAnimalSpawnEvent legendaryAnimalSpawnEvent = new LegendaryAnimalSpawnEvent(entity);
         Bukkit.getPluginManager().callEvent(legendaryAnimalSpawnEvent);
     }
 
     @EventHandler
-    public void onEntityDeath(EntityDeathEvent event) {
+    public void death(EntityDeathEvent event) {
         LivingEntity normal = event.getEntity();
         @Nullable LegendaryAnimal legendaryAnimal = types.get(normal.getType());
         if (legendaryAnimal == null)
             return;
         @Nullable LivingEntity legendary = legendaryAnimals.get(normal.getUniqueId());
-        if (legendary == null) {
-            return;
-        }
         List<ItemStack> drops = event.getDrops();
         drops.clear();
-        drops.addAll(BlobLibLootAPI.getInstance().generateLoot(legendaryAnimal.lootTable(), null));
+        boolean isLegendary = legendary != null;
+        String lootTable = !isLegendary ? legendaryAnimal.defaultEntity().lootTable() : legendaryAnimal.legendaryEntity().lootTable();
+        if (!lootTable.isEmpty()) {
+            drops.addAll(BlobLibLootAPI.getInstance().generateLoot(lootTable, null));
+        }
+        if (!isLegendary) {
+            return;
+        }
         LegendaryAnimalDeathEvent legendaryAnimalDeathEvent = new LegendaryAnimalDeathEvent(normal, drops);
         Bukkit.getPluginManager().callEvent(legendaryAnimalDeathEvent);
     }
@@ -172,8 +199,9 @@ public class LegendaryAnimalManager extends OutlawManager implements Listener {
      */
     @Nullable
     public static LivingEntity getSpawned(@NotNull UUID uuid) {
-        if (instance == null)
+        if (instance == null) {
             return null;
+        }
         return instance.legendaryAnimals.get(uuid);
     }
 
@@ -184,7 +212,7 @@ public class LegendaryAnimalManager extends OutlawManager implements Listener {
      * @return the legendary animal configuration if available; otherwise, null
      */
     @Nullable
-    public static LegendaryAnimal getConfig(@NotNull EntityType entityType){
+    public static LegendaryAnimal getConfig(@NotNull EntityType entityType) {
         if (instance == null)
             return null;
         return instance.types.get(entityType);
@@ -199,7 +227,7 @@ public class LegendaryAnimalManager extends OutlawManager implements Listener {
      * @return the legendary animal configuration if found; otherwise, null
      */
     @Nullable
-    public static LegendaryAnimal getConfig(@NotNull String identifier){
+    public static LegendaryAnimal getConfig(@NotNull String identifier) {
         if (instance == null)
             return null;
         return instance.types.values()

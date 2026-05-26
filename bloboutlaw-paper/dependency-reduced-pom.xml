@@ -76,6 +76,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>io.github.toxicity188</groupId>
+      <artifactId>bettermodel-bukkit-api</artifactId>
+      <version>3.0.2</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>cjcrafter.weaponmechanics</groupId>
       <artifactId>weaponmechanics</artifactId>
       <version>4.1.4</version>

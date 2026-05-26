@@ -102,6 +102,12 @@
             <version>1.0</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>io.github.toxicity188</groupId>
+            <artifactId>bettermodel-bukkit-api</artifactId>
+            <version>3.0.2</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
 </project>

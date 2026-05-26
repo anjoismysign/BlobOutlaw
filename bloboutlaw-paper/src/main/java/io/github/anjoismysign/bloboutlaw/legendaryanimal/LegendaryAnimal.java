@@ -1,61 +1,157 @@
 package io.github.anjoismysign.bloboutlaw.legendaryanimal;
 
+import io.github.anjoismysign.bloblib.entities.AttributeModifierBean;
+import io.github.anjoismysign.bloboutlaw.BlobOutlaw;
 import io.github.anjoismysign.bloboutlaw.goal.LegendaryAnimalGoal;
 import io.github.anjoismysign.holoworld.asset.DataAsset;
 import io.github.anjoismysign.holoworld.asset.IdentityGenerator;
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
+import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Mob;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
 
 public record LegendaryAnimal(@NotNull String identifier,
                               @NotNull EntityType type,
-                              double health,
-                              double speed,
-                              double scale,
                               double chance,
-                              @NotNull String lootTable) implements DataAsset {
+                              @NotNull RuntimeEntityBean defaultEntity,
+                              @NotNull RuntimeEntityBean legendaryEntity) implements DataAsset {
 
-    public void instantiate(@NotNull Mob mob) {
-        if (mob.getType() != type)
+    public void instantiate(@NotNull Mob mob, boolean isLegendary) {
+        var logger = BlobOutlaw.getInstance().getLogger();
+        if (mob.getType() != type) {
+            logger.info(mob.getType()+ " ("+mob.getUniqueId()+") is not the same type of '"+identifier+"' LegendaryAnimal");
             return;
-        Bukkit.getMobGoals().addGoal(mob, 3, new LegendaryAnimalGoal(mob));
-        AttributeInstance healthInstance = mob.getAttribute(Attribute.MAX_HEALTH);
-        if (healthInstance != null) {
-            healthInstance.setBaseValue(healthInstance.getBaseValue() * health);
-            mob.setHealth(healthInstance.getValue());
         }
-        AttributeInstance speedInstance = mob.getAttribute(Attribute.MOVEMENT_SPEED);
-        if (speedInstance != null)
-            speedInstance.setBaseValue(speedInstance.getBaseValue() * speed);
-        AttributeInstance scaleInstance = mob.getAttribute(Attribute.SCALE);
-        if (scaleInstance != null)
-            scaleInstance.setBaseValue(scaleInstance.getBaseValue() * scale);
+        if (isLegendary) {
+            Bukkit.getMobGoals().addGoal(mob, 3, new LegendaryAnimalGoal(mob));
+        }
+        logger.info(isLegendary+" (isLegendary 2)");
+        RuntimeEntityBean entityBean = isLegendary ? legendaryEntity : defaultEntity;
+        Map<Attribute, AttributeModifier> attributes = entityBean.attributes;
+        attributes.forEach((attribute, modifier)->{
+            @Nullable AttributeInstance instance = mob.getAttribute(attribute);
+            if (instance == null){
+                return;
+            }
+            instance.addModifier(modifier);
+            logger.info("Applying " + attribute.getKey() + " -> amount=" + modifier.getAmount()
+                    + " op=" + modifier.getOperation() + " to " + mob.getUniqueId());
+        });
     }
 
-    public record Info(@NotNull EntityType type,
-                       @NotNull String health,
-                       @NotNull String speed,
-                       @NotNull String scale,
-                       @NotNull String chance,
-                       @NotNull String lootTable) implements IdentityGenerator<LegendaryAnimal> {
+    public static final class Info implements IdentityGenerator<LegendaryAnimal> {
+        private EntityType type;
+        private double chance;
+        private @NotNull EntityBean defaultEntity;
+        private @NotNull EntityBean legendaryEntity;
 
-        @NotNull
-        @Override
-        public LegendaryAnimal generate(@NotNull String identifier) {
-            Class<? extends Entity> entityClass = type.getEntityClass();
-            if (entityClass == null)
-                throw new IllegalArgumentException("Entity type for '" + identifier + "' is null!");
-            if (!Mob.class.isAssignableFrom(entityClass))
-                throw new IllegalArgumentException("Entity type for '" + identifier + "' is not a Mob!");
-            double health = Double.parseDouble(this.health);
-            double speed = Double.parseDouble(this.speed);
-            double scale = Double.parseDouble(this.scale);
-            double chance = Double.parseDouble(this.chance);
-            return new LegendaryAnimal(identifier, type, health, speed, scale, chance, lootTable);
+            @NotNull
+            @Override
+            public LegendaryAnimal generate(@NotNull String identifier) {
+                Class<? extends Entity> entityClass = type.getEntityClass();
+                if (entityClass == null)
+                    throw new IllegalArgumentException("Entity type for '" + identifier + "' is null!");
+                if (!Mob.class.isAssignableFrom(entityClass))
+                    throw new IllegalArgumentException("Entity type for '" + identifier + "' is not a Mob!");
+                RuntimeEntityBean runtimeDefaultEntity = defaultEntity.toRuntimeEntityBean();
+                RuntimeEntityBean runtimeLegendaryEntity = legendaryEntity.toRuntimeEntityBean();
+
+                BlobOutlaw.getInstance().getLogger().info("Loaded '" + identifier + "': chance=" + chance
+                                + ", defaultAttr=" + runtimeDefaultEntity.attributes()
+                                + ", legendaryAttr=" + runtimeLegendaryEntity.attributes());
+                return new LegendaryAnimal(identifier, type, chance, runtimeDefaultEntity, runtimeLegendaryEntity);
+            }
+
+
+        public EntityType getType() {
+            return type;
+        }
+
+        public void setType(EntityType type) {
+            this.type = type;
+        }
+
+        public double getChance() {
+            return chance;
+        }
+
+        public void setChance(double chance) {
+            this.chance = chance;
+        }
+
+        public @NotNull EntityBean getDefaultEntity() {
+            return defaultEntity;
+        }
+
+        public void setDefaultEntity(@NotNull EntityBean defaultEntity) {
+            this.defaultEntity = defaultEntity;
+        }
+
+        public @NotNull EntityBean getLegendaryEntity() {
+            return legendaryEntity;
+        }
+
+        public void setLegendaryEntity(@NotNull EntityBean legendaryEntity) {
+            this.legendaryEntity = legendaryEntity;
+        }
+    }
+
+    public record RuntimeEntityBean(Map<Attribute, AttributeModifier> attributes,
+                                    String lootTable,
+                                    String model) {
+
+        public EntityBean toEntityBean(){
+            EntityBean entityBean = new EntityBean();
+            entityBean.setAttributes(AttributeModifierBean.serializeAttributes(attributes));
+            entityBean.setLootTable(lootTable);
+            entityBean.setModel(model);
+            return entityBean;
+        }
+
+    }
+
+    public static final class EntityBean {
+        private Map<String, AttributeModifierBean> attributes;
+        private String lootTable;
+        private String model;
+
+        public RuntimeEntityBean toRuntimeEntityBean(){
+            return new RuntimeEntityBean(AttributeModifierBean.deserializeAttributes(attributes), lootTable, model);
+        }
+
+        public Map<String, AttributeModifierBean> getAttributes() {
+            return attributes;
+        }
+
+        public void setAttributes(Map<String, AttributeModifierBean> attributes) {
+            this.attributes = attributes;
+        }
+
+        public String getLootTable() {
+            return lootTable;
+        }
+
+        public void setLootTable(String lootTable) {
+            this.lootTable = lootTable;
+        }
+
+        public String getModel() {
+            return model;
+        }
+
+        public void setModel(String model) {
+            this.model = model;
         }
     }
 }

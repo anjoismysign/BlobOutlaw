@@ -89,7 +89,7 @@ public class LegendaryAnimalGoal implements Goal<@NotNull Mob> {
             return;
         }
         legendaryAnimal.teleport(enemy);
-            legendaryAnimal.attack(enemy);
+        legendaryAnimal.attack(enemy);
         this.cooldown = generateCooldown();
     }
 

@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 
@@ -50,23 +51,61 @@ public record LegendaryAnimalSpawner(@NotNull String identifier,
 
     @NotNull
     public IdentityGeneration<LegendaryAnimalSpawner> generation(){
-        Info info = new Info(minDelay, maxDelay, maxCount, blocksReferences);
+        Info info = new Info();
+        info.setMinDelay(minDelay);
+        info.setMaxDelay(maxDelay);
+        info.setMaxCount(maxCount);
+        info.setBlocks(blocksReferences);
         return new IdentityGeneration<>(identifier, info);
     }
 
-    public record Info(int minDelay,
-                       int maxDelay,
-                       int maxCount,
-                       @NotNull List<String> blocks)
-            implements IdentityGenerator<LegendaryAnimalSpawner> {
+    public static final class Info
+                implements IdentityGenerator<LegendaryAnimalSpawner> {
+        private int minDelay;
+        private int maxDelay;
+        private int maxCount;
+        private @NotNull List<String> blocks;
+
         @Override
-        public @NotNull LegendaryAnimalSpawner generate(@NotNull String identifier) {
-            return new LegendaryAnimalSpawner(
-                    identifier,
-                    new ArrayList<>(blocks),
-                    minDelay,
-                    maxDelay,
-                    maxCount);
+            public @NotNull LegendaryAnimalSpawner generate(@NotNull String identifier) {
+                return new LegendaryAnimalSpawner(
+                        identifier,
+                        new ArrayList<>(blocks),
+                        minDelay,
+                        maxDelay,
+                        maxCount);
+            }
+
+        public int getMinDelay() {
+            return minDelay;
+        }
+
+        public void setMinDelay(int minDelay) {
+            this.minDelay = minDelay;
+        }
+
+        public int getMaxDelay() {
+            return maxDelay;
+        }
+
+        public void setMaxDelay(int maxDelay) {
+            this.maxDelay = maxDelay;
+        }
+
+        public int getMaxCount() {
+            return maxCount;
+        }
+
+        public void setMaxCount(int maxCount) {
+            this.maxCount = maxCount;
+        }
+
+        public @NotNull List<String> getBlocks() {
+            return blocks;
+        }
+
+        public void setBlocks(@NotNull List<String> blocks) {
+            this.blocks = blocks;
         }
     }
 
@@ -94,15 +133,16 @@ public record LegendaryAnimalSpawner(@NotNull String identifier,
                 public void run() {
                     int currentDelay = delay.thanks();
                     int currentCount = entities.size();
-                    if (currentDelay == 0 && currentCount < maxCount){
-                        entities.add(spawner.spawn(block).getUniqueId());
+                    if (currentDelay <= 0) {
+                        if (currentCount < maxCount) {
+                            entities.add(spawner.spawn(block).getUniqueId());
+                        }
                         delay.talk(delay(spawner));
-                        return;
+                    } else {
+                        delay.talk(currentDelay - 1);
                     }
-                    delay.talk(currentDelay-1);
                 }
-            }.runTaskTimer(BlobOutlaw.getInstance(),
-                    0, 1);
+            }.runTaskTimer(BlobOutlaw.getInstance(), 0, 1);
             return new Task(task,spawner,block,delay,entities);
         }
     }
