@@ -30,7 +30,7 @@ public record LegendaryAnimal(@NotNull String identifier,
     public void instantiate(@NotNull Mob mob, boolean isLegendary) {
         var logger = BlobOutlaw.getInstance().getLogger();
         if (mob.getType() != type) {
-            logger.info(mob.getType()+ " ("+mob.getUniqueId()+") is not the same type of '"+identifier+"' LegendaryAnimal");
+            logger.info(mob.getType() + " (" + mob.getUniqueId() + ") is not the same type of '" + identifier + "' LegendaryAnimal");
             return;
         }
         if (isLegendary) {
@@ -38,9 +38,9 @@ public record LegendaryAnimal(@NotNull String identifier,
         }
         RuntimeEntityBean entityBean = isLegendary ? legendaryEntity : defaultEntity;
         Map<Attribute, AttributeModifier> attributes = entityBean.attributes;
-        attributes.forEach((attribute, modifier)->{
+        attributes.forEach((attribute, modifier) -> {
             @Nullable AttributeInstance instance = mob.getAttribute(attribute);
-            if (instance == null){
+            if (instance == null) {
                 return;
             }
             instance.addModifier(modifier);
@@ -53,18 +53,18 @@ public record LegendaryAnimal(@NotNull String identifier,
         private @NotNull EntityBean defaultEntity;
         private @NotNull EntityBean legendaryEntity;
 
-            @NotNull
-            @Override
-            public LegendaryAnimal generate(@NotNull String identifier) {
-                Class<? extends Entity> entityClass = type.getEntityClass();
-                if (entityClass == null)
-                    throw new IllegalArgumentException("Entity type for '" + identifier + "' is null!");
-                if (!Mob.class.isAssignableFrom(entityClass))
-                    throw new IllegalArgumentException("Entity type for '" + identifier + "' is not a Mob!");
-                RuntimeEntityBean runtimeDefaultEntity = defaultEntity.toRuntimeEntityBean();
-                RuntimeEntityBean runtimeLegendaryEntity = legendaryEntity.toRuntimeEntityBean();
-                return new LegendaryAnimal(identifier, type, chance, runtimeDefaultEntity, runtimeLegendaryEntity);
-            }
+        @NotNull
+        @Override
+        public LegendaryAnimal generate(@NotNull String identifier) {
+            Class<? extends Entity> entityClass = type.getEntityClass();
+            if (entityClass == null)
+                throw new IllegalArgumentException("Entity type for '" + identifier + "' is null!");
+            if (!Mob.class.isAssignableFrom(entityClass))
+                throw new IllegalArgumentException("Entity type for '" + identifier + "' is not a Mob!");
+            RuntimeEntityBean runtimeDefaultEntity = defaultEntity.toRuntimeEntityBean();
+            RuntimeEntityBean runtimeLegendaryEntity = legendaryEntity.toRuntimeEntityBean();
+            return new LegendaryAnimal(identifier, type, chance, runtimeDefaultEntity, runtimeLegendaryEntity);
+        }
 
 
         public EntityType getType() {
@@ -104,7 +104,7 @@ public record LegendaryAnimal(@NotNull String identifier,
                                     String lootTable,
                                     String model) {
 
-        public EntityBean toEntityBean(){
+        public EntityBean toEntityBean() {
             EntityBean entityBean = new EntityBean();
             entityBean.setAttributes(AttributeModifierBean.serializeAttributes(attributes));
             entityBean.setLootTable(lootTable);
@@ -119,7 +119,7 @@ public record LegendaryAnimal(@NotNull String identifier,
         private String lootTable;
         private String model;
 
-        public RuntimeEntityBean toRuntimeEntityBean(){
+        public RuntimeEntityBean toRuntimeEntityBean() {
             return new RuntimeEntityBean(AttributeModifierBean.deserializeAttributes(attributes), lootTable, model);
         }
 
