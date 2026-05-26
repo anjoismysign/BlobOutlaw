@@ -29,13 +29,13 @@ public record LegendaryAnimalSpawner(@NotNull String identifier,
         implements DataAsset {
 
     @Nullable
-    public LegendaryAnimal legendaryAnimal(){
+    public LegendaryAnimal legendaryAnimal() {
         @Nullable LegendaryAnimal legendaryAnimal = LegendaryAnimalManager.getConfig(identifier);
         return legendaryAnimal;
     }
 
     @NotNull
-    public List<Block> fetchBlocks(){
+    public List<Block> fetchBlocks() {
         return blocksReferences.stream()
                 .map(SerializationLib::deserializeLocation)
                 .map(Location::getBlock)
@@ -43,14 +43,14 @@ public record LegendaryAnimalSpawner(@NotNull String identifier,
     }
 
     @NotNull
-    public Mob spawn(@NotNull Block block){
+    public Mob spawn(@NotNull Block block) {
         Location location = block.getLocation().toCenterLocation();
         Entity entity = location.getWorld().spawnEntity(location, legendaryAnimal().type());
         return (Mob) entity;
     }
 
     @NotNull
-    public IdentityGeneration<LegendaryAnimalSpawner> generation(){
+    public IdentityGeneration<LegendaryAnimalSpawner> generation() {
         Info info = new Info();
         info.setMinDelay(minDelay);
         info.setMaxDelay(maxDelay);
@@ -60,21 +60,21 @@ public record LegendaryAnimalSpawner(@NotNull String identifier,
     }
 
     public static final class Info
-                implements IdentityGenerator<LegendaryAnimalSpawner> {
+            implements IdentityGenerator<LegendaryAnimalSpawner> {
         private int minDelay;
         private int maxDelay;
         private int maxCount;
         private @NotNull List<String> blocks;
 
         @Override
-            public @NotNull LegendaryAnimalSpawner generate(@NotNull String identifier) {
-                return new LegendaryAnimalSpawner(
-                        identifier,
-                        new ArrayList<>(blocks),
-                        minDelay,
-                        maxDelay,
-                        maxCount);
-            }
+        public @NotNull LegendaryAnimalSpawner generate(@NotNull String identifier) {
+            return new LegendaryAnimalSpawner(
+                    identifier,
+                    new ArrayList<>(blocks),
+                    minDelay,
+                    maxDelay,
+                    maxCount);
+        }
 
         public int getMinDelay() {
             return minDelay;
@@ -113,13 +113,13 @@ public record LegendaryAnimalSpawner(@NotNull String identifier,
                        @NotNull LegendaryAnimalSpawner spawner,
                        @NotNull Block block,
                        @NotNull Uber<Integer> delay,
-                       @NotNull List<UUID> entities){
+                       @NotNull List<UUID> entities) {
 
         private static final Random RANDOM = new Random();
 
         @NotNull
-        private static Integer delay(@NotNull LegendaryAnimalSpawner spawner){
-            return RANDOM.nextInt(spawner.minDelay, spawner.maxDelay+1);
+        private static Integer delay(@NotNull LegendaryAnimalSpawner spawner) {
+            return RANDOM.nextInt(spawner.minDelay, spawner.maxDelay + 1);
         }
 
         @NotNull
@@ -143,7 +143,7 @@ public record LegendaryAnimalSpawner(@NotNull String identifier,
                     }
                 }
             }.runTaskTimer(BlobOutlaw.getInstance(), 0, 1);
-            return new Task(task,spawner,block,delay,entities);
+            return new Task(task, spawner, block, delay, entities);
         }
     }
 
