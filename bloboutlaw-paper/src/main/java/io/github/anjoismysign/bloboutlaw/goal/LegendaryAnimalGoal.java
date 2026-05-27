@@ -24,40 +24,50 @@ import java.util.UUID;
 
 
 public class LegendaryAnimalGoal implements Goal<@NotNull Mob> {
-    private static final GoalKey<@NotNull Mob> key = GoalKey.of(Mob.class, new NamespacedKey(BlobOutlaw.getInstance(), "alpha_goal"));
+    private static final GoalKey<@NotNull Mob> key = GoalKey.of(Mob.class, new NamespacedKey(BlobOutlaw.getInstance(), "legendary_goal"));
     private static final Random random = new Random();
-    private final Mob legendaryAnimal;
+    private final Mob entity;
+    private final double awareDistance;
+    private final double attackDistance;
     private LivingEntity enemy;
     private int cooldown;
 
-    public LegendaryAnimalGoal(Mob alpha) {
-        this.legendaryAnimal = alpha;
+    public LegendaryAnimalGoal(Mob entity, double awareDistance, double attackDistance) {
+        this.entity = entity;
+        this.awareDistance = awareDistance;
+        this.attackDistance = attackDistance;
     }
 
     @Override
     public boolean shouldActivate() {
-        Location location = legendaryAnimal.getLocation();
-        for (Entity entity : location.getNearbyEntities(15, 15, 15)) {
-            if (entity.getType() != legendaryAnimal.getType())
+        Location location = entity.getLocation();
+        for (Entity entity : location.getNearbyEntities(awareDistance, awareDistance, awareDistance)) {
+            if (entity.getType() != this.entity.getType()) {
                 continue;
+            }
             UUID uuid = entity.getUniqueId();
-            if (uuid.equals(legendaryAnimal.getUniqueId()))
+            if (uuid.equals(this.entity.getUniqueId())) {
                 continue;
+            }
             @Nullable LivingEntity legendary = LegendaryAnimalManager.getSpawned(uuid);
-            if (legendary == null)
+            if (legendary == null) {
                 continue;
+            }
             enemy = legendary;
             return true;
         }
         if (enemy == null || !enemy.isValid())
-            for (Entity entity : location.getNearbyEntities(15, 15, 15)) {
-                if (entity.getType() != EntityType.PLAYER)
+            for (Entity entity : location.getNearbyEntities(awareDistance, awareDistance, awareDistance)) {
+                if (entity.getType() != EntityType.PLAYER) {
                     continue;
+                }
                 Player player = Objects.requireNonNull(Bukkit.getPlayer(entity.getUniqueId()), "Entity#getUniqueId doesn't point to a valid player");
-                if (player.getGameMode().isInvulnerable())
+                if (player.getGameMode().isInvulnerable()) {
                     continue;
-                if (player.isInvulnerable())
+                }
+                if (player.isInvulnerable()) {
                     continue;
+                }
                 enemy = player;
                 return true;
             }
@@ -66,11 +76,7 @@ public class LegendaryAnimalGoal implements Goal<@NotNull Mob> {
 
     @Override
     public boolean shouldStayActive() {
-        return enemy.isValid() && legendaryAnimal.getLocation().distanceSquared(this.enemy.getLocation()) >= 400;
-    }
-
-    @Override
-    public void start() {
+        return enemy.isValid() && entity.getLocation().distanceSquared(this.enemy.getLocation()) >= awareDistance * awareDistance;
     }
 
     @Override
@@ -84,12 +90,12 @@ public class LegendaryAnimalGoal implements Goal<@NotNull Mob> {
             cooldown--;
             return;
         }
-        if (legendaryAnimal.getLocation().distance(enemy.getLocation()) >= 7.84) {
-            legendaryAnimal.getPathfinder().moveTo(enemy);
+        if (entity.getLocation().distanceSquared(enemy.getLocation()) >= attackDistance * attackDistance) {
+            entity.getPathfinder().moveTo(enemy, 2.0);
             return;
         }
-        legendaryAnimal.teleport(enemy);
-        legendaryAnimal.attack(enemy);
+        entity.teleport(enemy);
+        entity.attack(enemy);
         this.cooldown = generateCooldown();
     }
 

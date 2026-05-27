@@ -1,15 +1,13 @@
 package io.github.anjoismysign.bloboutlaw.legendaryanimal;
 
+import com.destroystokyo.paper.entity.ai.MobGoals;
 import io.github.anjoismysign.bloblib.entities.AttributeModifierBean;
 import io.github.anjoismysign.bloboutlaw.BlobOutlaw;
+import io.github.anjoismysign.bloboutlaw.goal.FollowerAnimalGoal;
 import io.github.anjoismysign.bloboutlaw.goal.LegendaryAnimalGoal;
 import io.github.anjoismysign.holoworld.asset.DataAsset;
 import io.github.anjoismysign.holoworld.asset.IdentityGenerator;
-import io.papermc.paper.registry.RegistryAccess;
-import io.papermc.paper.registry.RegistryKey;
-import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
@@ -24,6 +22,9 @@ import java.util.Map;
 public record LegendaryAnimal(@NotNull String identifier,
                               @NotNull EntityType type,
                               double chance,
+                              boolean defaultIsFollower,
+                              double awareDistance,
+                              double attackDistance,
                               @NotNull RuntimeEntityBean defaultEntity,
                               @NotNull RuntimeEntityBean legendaryEntity) implements DataAsset {
 
@@ -33,8 +34,13 @@ public record LegendaryAnimal(@NotNull String identifier,
             logger.info(mob.getType() + " (" + mob.getUniqueId() + ") is not the same type of '" + identifier + "' LegendaryAnimal");
             return;
         }
+        MobGoals mobGoals = Bukkit.getMobGoals();
         if (isLegendary) {
-            Bukkit.getMobGoals().addGoal(mob, 3, new LegendaryAnimalGoal(mob));
+            mobGoals.addGoal(mob, 3, new LegendaryAnimalGoal(mob, awareDistance, attackDistance));
+        } else {
+            if (defaultIsFollower){
+                mobGoals.addGoal(mob, 1, new FollowerAnimalGoal(mob, awareDistance));
+            }
         }
         RuntimeEntityBean entityBean = isLegendary ? legendaryEntity : defaultEntity;
         Map<Attribute, AttributeModifier> attributes = entityBean.attributes;
@@ -50,6 +56,9 @@ public record LegendaryAnimal(@NotNull String identifier,
     public static final class Info implements IdentityGenerator<LegendaryAnimal> {
         private EntityType type;
         private double chance;
+        private boolean defaultIsFollower;
+        private double awareDistance;
+        private double attackDistance;
         private @NotNull EntityBean defaultEntity;
         private @NotNull EntityBean legendaryEntity;
 
@@ -63,7 +72,7 @@ public record LegendaryAnimal(@NotNull String identifier,
                 throw new IllegalArgumentException("Entity type for '" + identifier + "' is not a Mob!");
             RuntimeEntityBean runtimeDefaultEntity = defaultEntity.toRuntimeEntityBean();
             RuntimeEntityBean runtimeLegendaryEntity = legendaryEntity.toRuntimeEntityBean();
-            return new LegendaryAnimal(identifier, type, chance, runtimeDefaultEntity, runtimeLegendaryEntity);
+            return new LegendaryAnimal(identifier, type, chance, defaultIsFollower, awareDistance, attackDistance, runtimeDefaultEntity, runtimeLegendaryEntity);
         }
 
 
@@ -81,6 +90,30 @@ public record LegendaryAnimal(@NotNull String identifier,
 
         public void setChance(double chance) {
             this.chance = chance;
+        }
+
+        public boolean isDefaultIsFollower() {
+            return defaultIsFollower;
+        }
+
+        public void setDefaultIsFollower(boolean defaultIsFollower) {
+            this.defaultIsFollower = defaultIsFollower;
+        }
+
+        public double getAwareDistance() {
+            return awareDistance;
+        }
+
+        public void setAwareDistance(double awareDistance) {
+            this.awareDistance = awareDistance;
+        }
+
+        public double getAttackDistance() {
+            return attackDistance;
+        }
+
+        public void setAttackDistance(double attackDistance) {
+            this.attackDistance = attackDistance;
         }
 
         public @NotNull EntityBean getDefaultEntity() {
