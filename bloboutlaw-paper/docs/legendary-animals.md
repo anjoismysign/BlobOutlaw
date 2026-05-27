@@ -16,6 +16,9 @@ Each file is a `.yml` named after the animal identifier (e.g. `zombie.yml`, `ske
 ```yaml
 type: ZOMBIE
 chance: "0.005"
+defaultIsFollower: true
+awareDistance: 32.0
+attackDistance: 3.0
 defaultEntity:
   attributes:
     movement_speed:
@@ -50,6 +53,9 @@ legendaryEntity:
 |---|---|---|
 | `type` | EntityType | Any Bukkit mob entity type (e.g. `ZOMBIE`, `SKELETON`, `CREEPER`). Must be a `Mob`. |
 | `chance` | String (double) | Spawn probability, 0.0 to 1.0. E.g. `"0.005"` = 0.5% chance. |
+| `defaultIsFollower` | boolean | If `true` (default `false`), non-legendary mobs of this type follow nearby legendary mobs of the same type using `FollowerAnimalGoal`. |
+| `awareDistance` | double | Detection radius in blocks. For legendaries: used to detect other legendary mobs and players. For followers: used to detect the legendary mob to follow. |
+| `attackDistance` | double | Attack range in blocks for legendary mobs. Within this distance the legendary teleports and attacks; beyond it, pathfinds toward the target. |
 | `defaultEntity` | EntityBean | Configuration applied to normal (non-legendary) spawns of this type. |
 | `legendaryEntity` | EntityBean | Configuration applied when the chance roll succeeds. |
 
@@ -113,6 +119,9 @@ blocks: []
 - If legendary, the `legendaryEntity` bean is applied (attributes, model, loot table); otherwise `defaultEntity` is applied instead.
 - Attribute modifiers from the chosen `EntityBean` are attached to the mob on spawn.
 - On death, the mob's `lootTable` is used to generate drops via BlobLib's loot table system.
+- **AI Goals:**
+  - Legendary mobs receive a `LegendaryAnimalGoal` (priority 3): they hunt other legendary mobs of the same type within `awareDistance`, and if none are found, attack players within the same radius. Within `attackDistance`, they teleport to the target and strike; outside it, they pathfind at speed 2.0.
+  - If `defaultIsFollower` is `true`, non-legendary mobs receive a `FollowerAnimalGoal` (priority 1): they follow nearby legendary mobs of the same type within `awareDistance`, forming a pack that trails the leader.
 
 ---
 
