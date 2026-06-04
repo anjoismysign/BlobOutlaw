@@ -6,7 +6,6 @@ import io.github.anjoismysign.bloboutlaw.director.manager.HookManager;
 import io.github.anjoismysign.bloboutlaw.director.manager.OutlawConfigurationManager;
 import io.github.anjoismysign.bloboutlaw.director.manager.OutlawListenerManager;
 import io.github.anjoismysign.bloboutlaw.director.manager.SafeZoneManager;
-import io.github.anjoismysign.bloboutlaw.legendaryanimal.LegendaryAnimalManager;
 import org.jetbrains.annotations.NotNull;
 
 public class OutlawManagerDirector extends GenericManagerDirector<BlobOutlaw> {
@@ -19,8 +18,6 @@ public class OutlawManagerDirector extends GenericManagerDirector<BlobOutlaw> {
                 new OutlawListenerManager(this));
         addManager("SafeZoneManager",
                 new SafeZoneManager(this));
-        addManager("LegendaryAnimalManager",
-                new LegendaryAnimalManager(this));
         addManager("HookManager",
                 new HookManager(this));
     }
@@ -32,7 +29,6 @@ public class OutlawManagerDirector extends GenericManagerDirector<BlobOutlaw> {
     public void reload() {
         getConfigManager().reload();
         getListenerManager().reload();
-        getLegendaryAnimalManager().reload();
     }
 
     @NotNull
@@ -48,11 +44,6 @@ public class OutlawManagerDirector extends GenericManagerDirector<BlobOutlaw> {
     @NotNull
     public final SafeZoneManager getSafeZoneManager() {
         return getManager("SafeZoneManager", SafeZoneManager.class);
-    }
-
-    @NotNull
-    public final LegendaryAnimalManager getLegendaryAnimalManager() {
-        return getManager("LegendaryAnimalManager", LegendaryAnimalManager.class);
     }
 
 }

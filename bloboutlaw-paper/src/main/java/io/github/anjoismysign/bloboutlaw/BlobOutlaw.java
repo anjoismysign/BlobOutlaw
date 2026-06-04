@@ -9,8 +9,6 @@ import io.github.anjoismysign.bloboutlaw.implementation.BukkitCell;
 import io.github.anjoismysign.bloboutlaw.implementation.BukkitOutlawAccount;
 import io.github.anjoismysign.bloboutlaw.implementation.BukkitOutlawProfile;
 import io.github.anjoismysign.bloboutlaw.implementation.BukkitPrison;
-import io.github.anjoismysign.bloboutlaw.legendaryanimal.LegendaryAnimal;
-import io.github.anjoismysign.bloboutlaw.legendaryanimal.LegendaryAnimalSpawner;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -25,8 +23,6 @@ public final class BlobOutlaw extends BlobPlugin {
     private OutlawManagerDirector director;
     private BukkitIdentityManager<BukkitCell> bukkitCellManager;
     private BukkitIdentityManager<BukkitPrison> bukkitPrisonManager;
-    private BukkitIdentityManager<LegendaryAnimal> legendaryAnimalManager;
-    private BukkitIdentityManager<LegendaryAnimalSpawner> legendaryAnimalSpawnerManager;
     private AccountCruder<BukkitOutlawAccount, BukkitOutlawProfile> accountCruder;
 
     public static BlobOutlaw getInstance() {
@@ -41,9 +37,6 @@ public final class BlobOutlaw extends BlobPlugin {
         PluginManager pluginManager = PluginManager.getInstance();
         bukkitCellManager = pluginManager.addIdentityManager(BukkitCell.Info.class, this, "cell", true);
         bukkitPrisonManager = pluginManager.addIdentityManager(BukkitPrison.Info.class, this, "prison", true);
-        legendaryAnimalManager = pluginManager.addIdentityManager(LegendaryAnimal.Info.class, this, "legendary animal", true);
-        legendaryAnimalSpawnerManager = pluginManager.addIdentityManager(LegendaryAnimalSpawner.Info.class, this, "legendary animal spawner", true);
-
         Bukkit.getScheduler().runTask(this, ()->{
            accountCruder = new AccountCruder<>(this, BukkitOutlawAccount.class, BukkitOutlawProfile.class);
         });
@@ -66,14 +59,6 @@ public final class BlobOutlaw extends BlobPlugin {
 
     public BukkitIdentityManager<BukkitPrison> getPrisonManager() {
         return bukkitPrisonManager;
-    }
-
-    public BukkitIdentityManager<LegendaryAnimal> getLegendaryAnimalManager() {
-        return legendaryAnimalManager;
-    }
-
-    public BukkitIdentityManager<LegendaryAnimalSpawner> getLegendaryAnimalSpawnerManager(){
-        return legendaryAnimalSpawnerManager;
     }
 
     @NotNull
