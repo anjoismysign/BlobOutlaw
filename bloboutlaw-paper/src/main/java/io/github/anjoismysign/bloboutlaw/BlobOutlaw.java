@@ -1,9 +1,9 @@
 package io.github.anjoismysign.bloboutlaw;
 
-import io.github.anjoismysign.bloblib.managers.BlobPlugin;
-import io.github.anjoismysign.bloblib.managers.PluginManager;
-import io.github.anjoismysign.bloblib.managers.asset.BukkitIdentityManager;
-import io.github.anjoismysign.bloblib.managers.cruder.AccountCruder;
+import io.github.anjoismysign.bloblib.manager.BlobPlugin;
+import io.github.anjoismysign.bloblib.manager.PluginManager;
+import io.github.anjoismysign.bloblib.manager.asset.BukkitIdentityManager;
+import io.github.anjoismysign.bloblib.manager.cruder.AccountCruder;
 import io.github.anjoismysign.bloboutlaw.director.OutlawManagerDirector;
 import io.github.anjoismysign.bloboutlaw.implementation.BukkitCell;
 import io.github.anjoismysign.bloboutlaw.implementation.BukkitOutlawAccount;

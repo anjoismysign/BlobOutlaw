@@ -1,6 +1,6 @@
 package io.github.anjoismysign.bloboutlaw.director.manager;
 
-import io.github.anjoismysign.bloblib.entities.ListenerManager;
+import io.github.anjoismysign.bloblib.manager.ListenerManager;
 import io.github.anjoismysign.bloboutlaw.director.OutlawManagerDirector;
 import io.github.anjoismysign.bloboutlaw.listener.BatonListener;
 import io.github.anjoismysign.bloboutlaw.listener.BountyListener;

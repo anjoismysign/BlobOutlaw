@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloboutlaw.implementation;
 
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
-import io.github.anjoismysign.bloblib.entities.translatable.TranslatablePositionable;
+import io.github.anjoismysign.bloblib.translatable.TranslatablePositionable;
 import io.github.anjoismysign.holoworld.asset.DataAsset;
 import io.github.anjoismysign.holoworld.asset.IdentityGenerator;
 import io.github.anjoismysign.outlaw.Cell;

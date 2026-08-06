@@ -1,6 +1,6 @@
 package io.github.anjoismysign.bloboutlaw.director;
 
-import io.github.anjoismysign.bloblib.entities.GenericManagerDirector;
+import io.github.anjoismysign.bloblib.manager.GenericManagerDirector;
 import io.github.anjoismysign.bloboutlaw.BlobOutlaw;
 import io.github.anjoismysign.bloboutlaw.director.manager.HookManager;
 import io.github.anjoismysign.bloboutlaw.director.manager.OutlawConfigurationManager;

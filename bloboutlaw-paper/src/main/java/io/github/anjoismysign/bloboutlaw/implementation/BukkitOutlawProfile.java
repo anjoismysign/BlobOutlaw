@@ -1,10 +1,10 @@
 package io.github.anjoismysign.bloboutlaw.implementation;
 
 import io.github.anjoismysign.bloblib.api.BlobLibEconomyAPI;
-import io.github.anjoismysign.bloblib.entities.BlobScheduler;
-import io.github.anjoismysign.bloblib.entities.Cleanable;
-import io.github.anjoismysign.bloblib.entities.PlayerDecorator;
-import io.github.anjoismysign.bloblib.entities.PlayerDecoratorAware;
+import io.github.anjoismysign.bloblib.domain.Cleanable;
+import io.github.anjoismysign.bloblib.domain.PlayerDecorator;
+import io.github.anjoismysign.bloblib.domain.PlayerDecoratorAware;
+import io.github.anjoismysign.bloblib.scheduler.BlobScheduler;
 import io.github.anjoismysign.bloboutlaw.BlobOutlaw;
 import io.github.anjoismysign.bloboutlaw.event.BountyClaimEvent;
 import io.github.anjoismysign.bloboutlaw.law.Law;
