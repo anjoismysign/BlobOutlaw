@@ -1,6 +1,6 @@
 package io.github.anjoismysign.bloboutlaw.configuration;
 
-import io.github.anjoismysign.bloblib.entities.CommandData;
+import io.github.anjoismysign.bloblib.command.CommandData;
 import io.github.anjoismysign.bloboutlaw.BlobOutlaw;
 
 import java.util.List;

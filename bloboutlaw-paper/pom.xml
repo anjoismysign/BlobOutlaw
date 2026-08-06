@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.github.anjoismysign</groupId>
         <artifactId>bloboutlaw</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
     </parent>
 
     <artifactId>bloboutlaw-paper</artifactId>
@@ -80,7 +80,7 @@
         <dependency>
             <groupId>io.github.anjoismysign</groupId>
             <artifactId>bloblib</artifactId>
-            <version>1.698.32</version>
+            <version>1.700</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -101,12 +101,6 @@
             <artifactId>bloboutlaw-api</artifactId>
             <version>1.0</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.github.toxicity188</groupId>
-            <artifactId>bettermodel-bukkit-api</artifactId>
-            <version>3.0.2</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 

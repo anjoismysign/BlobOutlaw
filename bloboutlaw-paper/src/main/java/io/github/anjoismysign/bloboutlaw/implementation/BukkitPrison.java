@@ -2,10 +2,10 @@ package io.github.anjoismysign.bloboutlaw.implementation;
 
 import io.github.anjoismysign.bloblib.api.BlobLibMessageAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
-import io.github.anjoismysign.bloblib.entities.BlobScheduler;
-import io.github.anjoismysign.bloblib.entities.message.BlobMessage;
-import io.github.anjoismysign.bloblib.entities.translatable.TranslatablePositionable;
-import io.github.anjoismysign.bloblib.managers.asset.BukkitIdentityManager;
+import io.github.anjoismysign.bloblib.manager.asset.BukkitIdentityManager;
+import io.github.anjoismysign.bloblib.message.BlobMessage;
+import io.github.anjoismysign.bloblib.scheduler.BlobScheduler;
+import io.github.anjoismysign.bloblib.translatable.TranslatablePositionable;
 import io.github.anjoismysign.bloboutlaw.BlobOutlaw;
 import io.github.anjoismysign.bloboutlaw.configuration.OutlawConfiguration;
 import io.github.anjoismysign.holoworld.asset.DataAsset;

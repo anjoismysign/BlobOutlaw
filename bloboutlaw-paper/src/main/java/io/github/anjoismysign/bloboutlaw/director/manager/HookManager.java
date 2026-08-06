@@ -2,10 +2,10 @@ package io.github.anjoismysign.bloboutlaw.director.manager;
 
 import io.github.anjoismysign.bloblib.api.BlobLibEconomyAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
-import io.github.anjoismysign.bloblib.entities.BlobPHExpansion;
-import io.github.anjoismysign.bloblib.entities.GenericManager;
-import io.github.anjoismysign.bloblib.entities.tag.TagSet;
-import io.github.anjoismysign.bloblib.entities.translatable.TranslatableItem;
+import io.github.anjoismysign.bloblib.manager.GenericManager;
+import io.github.anjoismysign.bloblib.placeholderapi.BlobPHExpansion;
+import io.github.anjoismysign.bloblib.tag.TagSet;
+import io.github.anjoismysign.bloblib.translatable.TranslatableItem;
 import io.github.anjoismysign.bloboutlaw.BlobOutlaw;
 import io.github.anjoismysign.bloboutlaw.director.OutlawManagerDirector;
 import io.github.anjoismysign.bloboutlaw.entity.WeaponHandler;

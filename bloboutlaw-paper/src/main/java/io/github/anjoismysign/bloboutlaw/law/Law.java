@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloboutlaw.law;
 
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
-import io.github.anjoismysign.bloblib.entities.translatable.TranslatableSnippet;
+import io.github.anjoismysign.bloblib.translatable.TranslatableSnippet;
 import io.github.anjoismysign.bloboutlaw.BlobOutlaw;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
