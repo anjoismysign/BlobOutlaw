@@ -39,7 +39,7 @@ public record SafeZoneUtil(@NotNull OutlawConfigurationManager configManager) {
     @NotNull
     public List<TranslatablePositionable> getSpawnPoints() {
         Set<String> safeZones = configManager.getSafeZones();
-        return BlobLib.getInstance().getTranslatablePositionableManager().getAssets()
+        return BlobLib.getInstance().getTranslatablePositionableManager().getAssets("en_us")
                 .stream()
                 .filter(positionable -> safeZones.contains(positionable.identifier()))
                 .toList();
