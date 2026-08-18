@@ -3,7 +3,7 @@
   <parent>
     <artifactId>bloboutlaw</artifactId>
     <groupId>io.github.anjoismysign</groupId>
-    <version>1.1</version>
+    <version>1.702.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>bloboutlaw-paper</artifactId>
@@ -66,7 +66,7 @@
     <dependency>
       <groupId>io.github.anjoismysign</groupId>
       <artifactId>bloblib</artifactId>
-      <version>1.701</version>
+      <version>1.702</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

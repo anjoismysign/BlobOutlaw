@@ -6,7 +6,7 @@
 
     <groupId>io.github.anjoismysign</groupId>
     <artifactId>bloboutlaw</artifactId>
-    <version>1.1</version>
+    <version>1.702.0</version>
     <packaging>pom</packaging>
     <modules>
         <module>bloboutlaw-api</module>
