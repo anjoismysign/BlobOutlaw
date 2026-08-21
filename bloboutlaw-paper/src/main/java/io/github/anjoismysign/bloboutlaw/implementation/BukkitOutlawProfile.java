@@ -174,10 +174,7 @@ public final class BukkitOutlawProfile implements Crudable, Outlaw, Suppressible
     }
 
     public @NotNull List<Law.Crime> getCrimes() {
-        if (crimes == null){
-            crimes = new ArrayList<>();
-        }
-        return crimes;
+        return crimes == null ? new ArrayList<>() : crimes;
     }
     @Override
     public boolean isSuppressed() {

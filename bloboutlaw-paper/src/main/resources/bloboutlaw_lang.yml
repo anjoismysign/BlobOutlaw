@@ -1,9 +1,11 @@
 BlobOutlaw:
+  Other-Clear-Charges:
+    Chat: '&f%player% &7was cleared of their charges'
+  Player-Has-No-Crimes:
+    Chat: '&c%player% doesn''t have any crimes!'
   Serving:
-    Type: ACTIONBAR
-    Message: '&cServing... &7Time remaining: %seconds% seconds'
+    Actionbar: '&cServing... &7Time remaining: %seconds% seconds'
   Served:
-    Type: TITLE
     Title: '&aServed'
     Subtitle: '&7Time to go out!'
     FadeIn: 10

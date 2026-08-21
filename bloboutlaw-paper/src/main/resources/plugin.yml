@@ -1,4 +1,11 @@
 name: BlobOutlaw
-version: 1.1
+version: ${project.version}
 main: io.github.anjoismysign.bloboutlaw.BlobOutlaw
 api-version: 1.21.11
+depend:
+  - BlobLib
+softdepend:
+  - WeaponMechanics
+  - PlaceholderAPI
+commands:
+  bloboutlaw: {}
