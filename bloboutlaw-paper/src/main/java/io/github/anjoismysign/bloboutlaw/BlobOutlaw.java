@@ -4,6 +4,7 @@ import io.github.anjoismysign.bloblib.manager.BlobPlugin;
 import io.github.anjoismysign.bloblib.manager.PluginManager;
 import io.github.anjoismysign.bloblib.manager.asset.BukkitIdentityManager;
 import io.github.anjoismysign.bloblib.manager.cruder.AccountCruder;
+import io.github.anjoismysign.bloboutlaw.command.BlobOutlawCommand;
 import io.github.anjoismysign.bloboutlaw.director.OutlawManagerDirector;
 import io.github.anjoismysign.bloboutlaw.implementation.BukkitCell;
 import io.github.anjoismysign.bloboutlaw.implementation.BukkitOutlawAccount;
@@ -37,6 +38,8 @@ public final class BlobOutlaw extends BlobPlugin {
         PluginManager pluginManager = PluginManager.getInstance();
         bukkitCellManager = pluginManager.addIdentityManager(BukkitCell.Info.class, this, "cell", true);
         bukkitPrisonManager = pluginManager.addIdentityManager(BukkitPrison.Info.class, this, "prison", true);
+
+        BlobOutlawCommand.INSTANCE.load();
         Bukkit.getScheduler().runTask(this, ()->{
            accountCruder = new AccountCruder<>(this, BukkitOutlawAccount.class, BukkitOutlawProfile.class);
         });
