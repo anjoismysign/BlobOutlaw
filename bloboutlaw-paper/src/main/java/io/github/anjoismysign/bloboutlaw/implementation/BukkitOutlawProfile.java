@@ -6,6 +6,7 @@ import io.github.anjoismysign.bloblib.domain.PlayerDecorator;
 import io.github.anjoismysign.bloblib.domain.PlayerDecoratorAware;
 import io.github.anjoismysign.bloblib.scheduler.BlobScheduler;
 import io.github.anjoismysign.bloboutlaw.BlobOutlaw;
+import io.github.anjoismysign.bloboutlaw.event.BehaviourFlagEvent;
 import io.github.anjoismysign.bloboutlaw.event.BountyClaimEvent;
 import io.github.anjoismysign.bloboutlaw.law.Law;
 import io.github.anjoismysign.outlaw.Outlaw;
@@ -14,6 +15,7 @@ import io.github.anjoismysign.psa.PostLoadable;
 import io.github.anjoismysign.psa.crud.Crudable;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -101,14 +103,17 @@ public final class BukkitOutlawProfile implements Crudable, Outlaw, Suppressible
     }
 
     public void clearCharges() {
+        BehaviourFlagEvent behaviourFlagEvent = new BehaviourFlagEvent(this, null, null);
+        Bukkit.getPluginManager().callEvent(behaviourFlagEvent);
         reset();
         getCrimes().clear();
         setStatus(Law.Status.NONE);
     }
 
-    public void warrant(@NotNull Law.Crime pressedCharge) {
+    public void warrant(@NotNull Law.Crime pressedCharge, @Nullable Entity victim) {
         Objects.requireNonNull(pressedCharge, "'pressedCharge' cannot be null");
-
+        BehaviourFlagEvent behaviourFlagEvent = new BehaviourFlagEvent(this, pressedCharge, victim);
+        Bukkit.getPluginManager().callEvent(behaviourFlagEvent);
         boolean isMenace = pressedCharge.equals(Law.Crime.MURDER) && (crimes.stream().filter(charge -> charge.equals(Law.Crime.MURDER)).toList().size() > 3 || bounty >= 750.0);
         if (isMenace) {
             pressedCharge = Law.Crime.MENACE;

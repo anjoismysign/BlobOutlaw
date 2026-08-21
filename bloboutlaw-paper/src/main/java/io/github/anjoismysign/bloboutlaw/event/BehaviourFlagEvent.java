@@ -12,19 +12,13 @@ public class BehaviourFlagEvent extends OutlawEvent {
     private static final HandlerList HANDLERS_LIST = new HandlerList();
     private final @Nullable Entity victim;
     private final @Nullable Law.Crime facingCharge;
-    private double transactionAmount;
-    private boolean isCriminal;
 
     public BehaviourFlagEvent(@NotNull BukkitOutlawProfile serializable,
                               @Nullable Law.Crime facingCharge,
-                              double transactionAmount,
-                              boolean isCriminal,
                               @Nullable Entity victim) {
         super(serializable, false);
         this.victim = victim;
         this.facingCharge = facingCharge;
-        this.transactionAmount = transactionAmount;
-        this.isCriminal = isCriminal;
     }
 
     public static HandlerList getHandlerList() {
@@ -36,26 +30,16 @@ public class BehaviourFlagEvent extends OutlawEvent {
         return HANDLERS_LIST;
     }
 
+    /**
+     * @return The victim of this behavior, null if nobody is affected
+     */
     public @Nullable Entity getVictim() {
         return victim;
     }
 
-    public double getTransactionAmount() {
-        return transactionAmount;
-    }
-
-    public void setTransactionAmount(double transactionAmount) {
-        this.transactionAmount = transactionAmount;
-    }
-
-    public boolean isCriminal() {
-        return isCriminal;
-    }
-
-    public void setCriminal(boolean criminal) {
-        isCriminal = criminal;
-    }
-
+    /**
+     * @return The facing charge, or null if the outlaw no longer has charges (were cleared)
+     */
     public @Nullable Law.Crime getFacingCharge() {
         return facingCharge;
     }
