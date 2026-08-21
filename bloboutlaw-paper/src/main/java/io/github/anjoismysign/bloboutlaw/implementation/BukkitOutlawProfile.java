@@ -230,4 +230,9 @@ public final class BukkitOutlawProfile implements Crudable, Outlaw, Suppressible
         return identification;
     }
 
+    @Override
+    public boolean isWanted(){
+        return Outlaw.super.isWanted() || !getCrimes().isEmpty();
+    }
+
 }

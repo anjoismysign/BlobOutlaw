@@ -26,11 +26,8 @@ public enum BlobOutlawCommand {
     private static final BlobLibMessageAPI MESSAGE_API = BlobLibMessageAPI.getInstance();
 
     public void load(){
-        CommandTarget<BukkitOutlawProfile> warrantedPlayers = CommandTargetBuilder.fromMap(()->{
-           var profiles = BlobOutlaw.getInstance().getAccountCruder().getAccounts()
-                   .stream()
-                   .filter(outlaw-> !outlaw.getCrimes().isEmpty())
-                   .toList();
+        CommandTarget<BukkitOutlawProfile> outlaws = CommandTargetBuilder.fromMap(()->{
+           var profiles = BlobOutlaw.getInstance().getAccountCruder().getAccounts();
             Map<String, BukkitOutlawProfile> warranted = new HashMap<>();
             profiles.forEach(outlaw->{
                 @Nullable Player player = outlaw.player();
@@ -44,13 +41,13 @@ public enum BlobOutlawCommand {
         Command charges = COMMAND.child("charges");
 
         Command clearCharges = charges.child("clear");
-        clearCharges.setParameters(warrantedPlayers);
+        clearCharges.setParameters(outlaws);
         clearCharges.onExecute((permissionMessenger, args) -> {
             if (args.length < 1){
                 return;
             }
             CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
-            @Nullable BukkitOutlawProfile outlaw = warrantedPlayers.parse(args[0]);
+            @Nullable BukkitOutlawProfile outlaw = outlaws.parse(args[0]);
             if (outlaw == null) {
                 MESSAGE_API
                         .getMessage("Player.Not-Found", sender)
@@ -58,12 +55,13 @@ public enum BlobOutlawCommand {
                 return;
             }
             @Nullable Player player = outlaw.player();
-            if (player == null){MESSAGE_API
+            if (player == null){
+                MESSAGE_API
                     .getMessage("Player.Not-Found", sender)
                     .toCommandSender(sender);
                 return;
             }
-            if (outlaw.getCrimes().isEmpty()){
+            if (!outlaw.isWanted()){
                 MESSAGE_API
                         .getMessage("BlobOutlaw.Player-Has-No-Crimes", sender)
                         .modder()
